@@ -28,6 +28,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#include "py/mpconfig.h"
+
+#if defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1
+
 #include <math.h>
 #include "color.h"
 
@@ -252,3 +256,5 @@ rgb hsvtorgb(hsv c){
     }
     return _c;
 }
+
+#endif /* defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1 */

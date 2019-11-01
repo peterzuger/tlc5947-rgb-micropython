@@ -28,6 +28,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#include "py/mpconfig.h"
+
+#if defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1
+
 #include <string.h>
 #include <stdio.h>
 
@@ -1206,3 +1210,5 @@ const mp_obj_module_t mp_module_tlc5947={
 };
 
 MP_REGISTER_MODULE(MP_QSTR_tlc5947, mp_module_tlc5947, MODULE_TLC5947_ENABLED);
+
+#endif /* defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1 */

@@ -778,7 +778,9 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             dprintf("BRIGHTNESS\n\r");
             pat[i].type = pBRIGHTNESS;
             int len = 0;
-            while(isdigit(s[len]) || (s[len] == '.') || (*s == '-'))
+            if(*s == '-')
+                len++;
+            while(isdigit(s[len]) || (s[len] == '.'))
                 len++;
             pat[i].brighness.brightness = atof(s);
             s += len;

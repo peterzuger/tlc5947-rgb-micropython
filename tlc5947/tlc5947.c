@@ -1022,9 +1022,6 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
 
     int pid = mp_obj_get_int(pid_in);
 
-    if(pid <= 0)
-        mp_raise_ValueError("Invalid Pattern ID");
-
     int pos = -1;
     for(uint16_t i = 0; i < self->data.patterns.len; i++)
         if(self->data.patterns.list[i].id == pid){
@@ -1032,8 +1029,8 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
             break;
         }
 
-    if(pos == -1)
-        return mp_const_none;
+    if((pid <= 0) || (pos == -1))
+        mp_raise_ValueError("Invalid Pattern ID");
 
     token_t* new_tokens = m_malloc_maybe(sizeof(token_t) * pl);
 

@@ -876,18 +876,15 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
 
     if(!check_balanced_jumps(pattern_str)){
         mp_raise_msg(&mp_type_AttributeError, "unbalanced jumps");
-        return mp_const_none;
     }
 
     if(!check_colors(pattern_str)){
         mp_raise_msg(&mp_type_AttributeError, "invalid color Format");
-        return mp_const_none;
     }
 
     size_t pl = get_pattern_length(pattern_str);
     if(!pl){
         mp_raise_ValueError("Invalid Pattern");
-        return mp_const_none;
     }
 
     /**
@@ -901,7 +898,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     if(!new_plist){
         UNLOCK(self);
         m_malloc_fail(sizeof(token_t) * (self->data.patterns.len+1));
-        return mp_const_none;
     }
     self->data.patterns.list = new_plist;
 
@@ -917,7 +913,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     if(!self->data.patterns.list[self->data.patterns.len].tokens){
         UNLOCK(self);
         m_malloc_fail(sizeof(token_t) * pl);
-        return mp_const_none;
     }
 
     tokenize_pattern_str(pattern_str, self->data.patterns.list[self->data.patterns.len].tokens, pl);
@@ -935,13 +930,11 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
         if(!mp_obj_get_int_maybe(led_in, &tmpled)){
             delete_pattern(self, pid);
             mp_raise_TypeError("expected int");
-            return mp_const_none;
         }
         uint8_t led;
         if(!get_led_from_id_map(self, mp_obj_get_int(led_in), &led)){
             delete_pattern(self, pid);
             mp_raise_ValueError("led not in id_map");
-            return mp_const_none;
         }
 
         LOCK(self);
@@ -952,7 +945,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
             UNLOCK(self);
             delete_pattern(self, pid);
             m_malloc_fail(sizeof(uint16_t) * (self->data.pattern_map[led].len + 1));
-            return mp_const_none;
         }
         self->data.pattern_map[led].map = new_map;
 
@@ -972,7 +964,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
                 delete_pattern(self, pid);
                 m_free(leds);
                 mp_raise_TypeError("expected list of int");
-                return mp_const_none;
             }
         }
 
@@ -982,7 +973,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
                 delete_pattern(self, pid);
                 m_free(leds);
                 mp_raise_TypeError("led not in map");
-                return mp_const_none;
             }
 
             LOCK(self);
@@ -993,7 +983,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
                 UNLOCK(self);
                 delete_pattern(self, pid);
                 m_malloc_fail(sizeof(uint16_t) * (self->data.pattern_map[led].len + 1));
-                return mp_const_none;
             }
             self->data.pattern_map[led].map = new_map;
 
@@ -1006,7 +995,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     }else{
         delete_pattern(self, pid);
         mp_raise_TypeError("expected int or list of int");
-        return mp_const_none;
     }
 
     dump_pattern_map(self);
@@ -1021,27 +1009,21 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
 
     if(!check_balanced_jumps(pattern_str)){
         mp_raise_msg(&mp_type_AttributeError, "unbalanced jumps");
-        return mp_const_none;
     }
 
     if(!check_colors(pattern_str)){
         mp_raise_msg(&mp_type_AttributeError, "invalid color Format");
-        return mp_const_none;
     }
 
     size_t pl = get_pattern_length(pattern_str);
     if(!pl){
         mp_raise_ValueError("Invalid Pattern");
-        return mp_const_none;
     }
-
-    if(!mp_obj_is_int(pid_in))
-        return mp_const_false;
 
     int pid = mp_obj_get_int(pid_in);
 
     if(pid <= 0)
-        return mp_const_none;
+        mp_raise_ValueError("Invalid Pattern ID");
 
     int pos = -1;
     for(uint16_t i = 0; i < self->data.patterns.len; i++)
@@ -1057,7 +1039,6 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
 
     if(!new_tokens){
         m_malloc_fail(sizeof(token_t) * pl);
-        return mp_const_none;
     }
 
     tokenize_pattern_str(pattern_str, new_tokens, pl);
@@ -1092,7 +1073,6 @@ STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     uint8_t led;
     if(!get_led_from_id_map(self, mp_obj_get_int(led_in), &led)){
         mp_raise_ValueError("led not in map");
-        return mp_const_none;
     }
 
     rgb8 c = rgb12torgb8(get_buffer(self->buffer, led));
@@ -1147,7 +1127,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map){
             for(uint32_t k = 0; k < 8; k++)
                 self->id_map[k] = k;
             mp_raise_TypeError("can't convert to int");
-            return mp_const_false;
         }
     }
     return mp_const_none;

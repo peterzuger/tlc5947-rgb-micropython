@@ -364,7 +364,7 @@ void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
 #define tprintf(f, ...)
 #endif
 
-// returns 1 if the pattern is done
+// returns true if the pattern is done
 static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern){
     while(true){
         token_t* p = &pattern->tokens[pattern->current];
@@ -375,7 +375,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
             self->data.changed = true;
             pattern->current++;
             if(pattern->current == pattern->len)
-                return 1; // pattern is done, no more tokens
+                return true; // pattern is done, no more tokens
             continue;
         }
 
@@ -388,11 +388,11 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
                 if(!p->sleep.remaining){
                     pattern->current++;
                     if(pattern->current == pattern->len)
-                        return 1; // pattern is done, no more tokens
+                        return true; // pattern is done, no more tokens
                     continue;
                 }
             }
-            return 0;
+            return false;
         }
 
         case pBRIGHTNESS:{ // change overall brightness
@@ -403,7 +403,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
             self->data.changed = true;
             pattern->current++;
             if(pattern->current == pattern->len)
-                return 1; // pattern is done, no more tokens
+                return true; // pattern is done, no more tokens
             continue;
         }
 
@@ -412,7 +412,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
             pattern->stack.stack[pattern->stack.pos]++;
             pattern->current++;
             if(pattern->current == pattern->len)
-                return 1; // pattern is done, no more tokens
+                return true; // pattern is done, no more tokens
             continue;
         }
 
@@ -421,24 +421,24 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
             pattern->stack.stack[pattern->stack.pos]--;
             pattern->current++;
             if(pattern->current == pattern->len)
-                return 1; // pattern is done, no more tokens
+                return true; // pattern is done, no more tokens
             continue;
         }
 
         case pFOREVER:{  // stay here for ever
             tprintf("pFOREVER\n\r");
-            return 0;
+            return false;
         }
 
         case pJUMP_NZERO:{ // jump to the matching marker if stack value is not 0
             tprintf("pJNZ\n\r");
             if(pattern->stack.stack[pattern->stack.pos]){
                 pattern->current = p->jump.new_pp;
-                return 0;
+                return false;
             }else{
                 pattern->current++;
                 if(pattern->current == pattern->len)
-                    return 1; // pattern is done, no more tokens
+                    return true; // pattern is done, no more tokens
                 continue;
             }
         }
@@ -453,7 +453,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
             tprintf("pPUSH\n\r");
             pattern->stack.pos++;
             if(pattern->stack.pos == MAX_STACK) // stack overflow
-                return 1;
+                return true;
             pattern->stack.stack[pattern->stack.pos] = p->push.value;
             pattern->current++;
             continue;
@@ -462,7 +462,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         case pPOP:{         // Pop value from the stack
             tprintf("pPOP\n\r");
             if(!pattern->stack.pos) // stack underflow
-                return 1;
+                return true;
             pattern->stack.pos--;
             pattern->current++;
             continue;
@@ -471,7 +471,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         default:
             tprintf("pDEFAULT --- ERROR\n\r");
             dump_pattern(pattern);
-            return 1;
+            return true;
         }
     }
 }
@@ -590,7 +590,7 @@ STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* con
             mp_hal_pin_low(self->xlat);
             spi_transfer(self->spi, 36, self->buffer, NULL, 100);
             mp_hal_pin_high(self->xlat);
-            self->data.changed = 0;
+            self->data.changed = false;
         }
     }
     return mp_const_none;
@@ -620,7 +620,7 @@ static bool check_balanced_jumps(const char* s){
 
         case ']':
             if(!bc) // there was no matching opening bracet
-                return 0;
+                return false;
             bc--;
             break;
 
@@ -630,8 +630,8 @@ static bool check_balanced_jumps(const char* s){
     }
 
     if(bc) // to many opening bracets
-        return 0;
-    return 1;
+        return false;
+    return true;
 }
 
 static inline  int isdigit(int c){return ((c>='0')&&(c<='9'));}

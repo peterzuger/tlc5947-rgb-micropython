@@ -563,19 +563,21 @@ static bool do_tick(tlc5947_tlc5947_obj_t* self){
     if(self->data.changed){
         // now that all patterns are updated, get the latest of all patterns and update the led buffer
         for(uint16_t led = 0; led < 8; led++){
+            rgb12 color = BLACK;
+
             // find the matching pattern
             if(self->data.pattern_map[led].map){
                 // current pid for this led
                 uint16_t pid = self->data.pattern_map[led].map[self->data.pattern_map[led].len-1];
                 for(uint16_t j = 0; j < self->data.patterns.len; j++){
                     if(self->data.patterns.list[j].id == pid){
-                        set_buffer(self->buffer, led, self->data.patterns.list[j].color);
+                        color = self->data.patterns.list[j].color;
                         break;
                     }
                 }
-            }else{
-                set_buffer(self->buffer, led, BLACK);
             }
+
+            set_buffer(self->buffer, led, color);
         }
     }
     return self->data.changed;

@@ -56,6 +56,7 @@
  * "]"            Jump to the matching marker if stack value is not 0
  * "["            Marker
  * ";"            loop forever
+ * "@"            toggle the transparency
  *
  * examples:
  *   "+[#FFFFFF|500#000000|500]"
@@ -78,16 +79,17 @@
  *     this is repeated 5 times.
  */
 typedef enum{
-    pCOLOR,      // change color
-    pSLEEP,      // sleep for x amount of ticks
-    pBRIGHTNESS, // change overall brightness
-    pINCREMENT,  // increment current stack value
-    pDECREMENT,  // decrement current stack value
-    pFOREVER,    // dont do anything
-    pJUMP_NZERO, // jump to the matching marker if stack value is not 0
-    pMARK,       // Marker for jump
-    pPUSH,       // Push value onto the stack
-    pPOP         // Pop value from the stack
+    pCOLOR,       // change color
+    pTRANSPARENT, // toggle the transparency
+    pSLEEP,       // sleep for x amount of ticks
+    pBRIGHTNESS,  // change overall brightness
+    pINCREMENT,   // increment current stack value
+    pDECREMENT,   // decrement current stack value
+    pFOREVER,     // dont do anything
+    pJUMP_NZERO,  // jump to the matching marker if stack value is not 0
+    pMARK,        // Marker for jump
+    pPUSH,        // Push value onto the stack
+    pPOP          // Pop value from the stack
 }token_type_t;
 
 /**
@@ -107,6 +109,7 @@ typedef struct _token_t{
     token_type_t type;
     union{
         struct{rgb12 color;                            }color;
+        struct{                                        }transparent;
         struct{uint32_t sleep_time; uint32_t remaining;}sleep;
         struct{float brightness;                       }brighness;
         struct{                                        }increment;
@@ -132,6 +135,7 @@ typedef struct _pattern_base_t{
     }stack;
     rgb12 color;         // the led setting algorythm used this color,
                          // it is pre calculated every tick
+    bool visible;
 }pattern_base_t;
 
 typedef struct _tlc5947_tlc5947_obj_t{
@@ -331,17 +335,18 @@ void dump_pattern(pattern_base_t* pattern){
 
     for(uint16_t i = 0; i < pattern->len; i++){
         switch(pattern->tokens[i].type){
-        case pCOLOR:     {dprintf("pCOLOR\n\r");     break;}
-        case pSLEEP:     {dprintf("pSLEEP\n\r");     break;}
-        case pBRIGHTNESS:{dprintf("pBRIGHTNESS\n\r");break;}
-        case pINCREMENT: {dprintf("pINCREMENT\n\r"); break;}
-        case pDECREMENT: {dprintf("pDECREMENT\n\r"); break;}
-        case pFOREVER:   {dprintf("pFOREVER\n\r");   break;}
-        case pJUMP_NZERO:{dprintf("pJNZ\n\r");       break;}
-        case pMARK:      {dprintf("pMARK\n\r");      break;}
-        case pPUSH:      {dprintf("pPUSH\n\r");      break;}
-        case pPOP:       {dprintf("pPOP\n\r");       break;}
-        default:         {dprintf("pDEFAULT\n\r");   break;}
+        case pCOLOR:      {dprintf("pCOLOR\n\r");     break;}
+        case pTRANSPARENT:{dprintf("pTRANSPARENT");   break;}
+        case pSLEEP:      {dprintf("pSLEEP\n\r");     break;}
+        case pBRIGHTNESS: {dprintf("pBRIGHTNESS\n\r");break;}
+        case pINCREMENT:  {dprintf("pINCREMENT\n\r"); break;}
+        case pDECREMENT:  {dprintf("pDECREMENT\n\r"); break;}
+        case pFOREVER:    {dprintf("pFOREVER\n\r");   break;}
+        case pJUMP_NZERO: {dprintf("pJNZ\n\r");       break;}
+        case pMARK:       {dprintf("pMARK\n\r");      break;}
+        case pPUSH:       {dprintf("pPUSH\n\r");      break;}
+        case pPOP:        {dprintf("pPOP\n\r");       break;}
+        default:          {dprintf("pDEFAULT\n\r");   break;}
         }
     }
     dprintf("\033[0m");
@@ -373,6 +378,15 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
             tprintf("pCOLOR\n\r");
             pattern->color = p->color.color;
             self->data.changed = true;
+            pattern->current++;
+            if(pattern->current == pattern->len)
+                return true; // pattern is done, no more tokens
+            continue;
+        }
+
+        case pTRANSPARENT:{
+            tprintf("pTRANSPARENT\n\r");
+            pattern->visible = !pattern->visible;
             pattern->current++;
             if(pattern->current == pattern->len)
                 return true; // pattern is done, no more tokens
@@ -568,11 +582,19 @@ static bool do_tick(tlc5947_tlc5947_obj_t* self){
             // find the matching pattern
             if(self->data.pattern_map[led].map){
                 // current pid for this led
-                uint16_t pid = self->data.pattern_map[led].map[self->data.pattern_map[led].len-1];
-                for(uint16_t j = 0; j < self->data.patterns.len; j++){
-                    if(self->data.patterns.list[j].id == pid){
-                        color = self->data.patterns.list[j].color;
-                        break;
+                uint16_t pid_pos = self->data.pattern_map[led].len-1;
+
+                bool done = false;
+                while(!done){
+                    uint16_t pid = self->data.pattern_map[led].map[pid_pos];
+                    for(uint16_t j = 0; j < self->data.patterns.len; j++){
+                        if(self->data.patterns.list[j].id == pid){
+                            color = self->data.patterns.list[j].color;
+                            if(self->data.patterns.list[j].visible || (pid_pos == 0))
+                                done = true;
+                            --pid_pos;
+                            break;
+                        }
                     }
                 }
             }
@@ -776,6 +798,11 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             // TODO: implement HSV color
             break;
 
+        case '@':
+            dprintf("TRANSPARENT\n\r");
+            pat[i].type = pTRANSPARENT;
+            break;
+
         case '\b':{
             dprintf("BRIGHTNESS\n\r");
             pat[i].type = pBRIGHTNESS;
@@ -908,9 +935,10 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
 
     memset(&self->data.patterns.list[self->data.patterns.len], 0, sizeof(pattern_base_t));
 
-    self->data.patterns.list[self->data.patterns.len].tokens = m_malloc_maybe(sizeof(token_t) * pl);
-    self->data.patterns.list[self->data.patterns.len].id     = pid;
-    self->data.patterns.list[self->data.patterns.len].len    = pl;
+    self->data.patterns.list[self->data.patterns.len].tokens  = m_malloc_maybe(sizeof(token_t) * pl);
+    self->data.patterns.list[self->data.patterns.len].id      = pid;
+    self->data.patterns.list[self->data.patterns.len].len     = pl;
+    self->data.patterns.list[self->data.patterns.len].visible = true;
 
     if(!self->data.patterns.list[self->data.patterns.len].tokens){
         UNLOCK(self);
@@ -1047,9 +1075,10 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
     m_free(self->data.patterns.list[pos].tokens);
     memset(&self->data.patterns.list[pos], 0, sizeof(pattern_base_t));
 
-    self->data.patterns.list[pos].tokens = new_tokens;
-    self->data.patterns.list[pos].id     = pid;
-    self->data.patterns.list[pos].len    = pl;
+    self->data.patterns.list[pos].tokens  = new_tokens;
+    self->data.patterns.list[pos].id      = pid;
+    self->data.patterns.list[pos].len     = pl;
+    self->data.patterns.list[pos].visible = true;
 
     UNLOCK(self);
 

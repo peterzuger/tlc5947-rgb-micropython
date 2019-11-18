@@ -713,6 +713,7 @@ static size_t get_pattern_length(const char* s){
         case '+':
         case '-':
         case ';':
+        case '@':
         case '>':
             len++;
             break;

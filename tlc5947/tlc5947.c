@@ -387,6 +387,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         case pTRANSPARENT:{
             tprintf("pTRANSPARENT\n\r");
             pattern->visible = !pattern->visible;
+            self->data.changed = true;
             pattern->current++;
             if(pattern->current == pattern->len)
                 return true; // pattern is done, no more tokens

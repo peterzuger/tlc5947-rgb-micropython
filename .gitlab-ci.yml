@@ -16,6 +16,7 @@ fetch-micropython:
   script:
     - git clone --recurse-submodules https://github.com/micropython/micropython.git
   artifacts:
+    expose_as: 'micropython-repo'
     paths:
       - micropython/
 
@@ -24,6 +25,7 @@ mpy-cross:
   script:
     - make -C micropython/mpy-cross
   artifacts:
+    expose_as: 'mpy-cross'
     paths:
       - micropython/mpy-cross/mpy-cross
   dependencies:

@@ -1,0 +1,37 @@
+image: peterzuger/arch-dev
+
+stages:
+  - prepare
+  - prebuild
+  - build
+  - test
+
+# global variables
+variables:
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/tlc5947-rgb-micropython
+
+fetch-micropython:
+  stage: prepare
+  script:
+    - git clone --recurse-submodules https://github.com/micropython/micropython.git
+  artifacts:
+    paths:
+      - micropython/
+
+mpy-cross:
+  stage: prebuild
+  script:
+    - make -C micropython/mpy-cross
+  artifacts:
+    paths:
+      - micropython/mpy-cross/mpy-cross
+  dependencies:
+    - fetch-micropython
+
+stm32:
+  stage: build
+  script:
+    - make -C micropython/ports/stm32 USER_C_MODULES=$CI_BUILDS_DIR CFLAGS_EXTRA="-DMODULE_TLC5947_ENABLED=1"
+  dependencies:
+    - mpy-cross
+    - fetch-micropython

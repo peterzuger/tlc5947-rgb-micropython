@@ -8,7 +8,8 @@ stages:
 
 # global variables
 variables:
-  GIT_CLONE_PATH: $CI_BUILDS_DIR/tlc5947-rgb-micropython
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/c-modules/tlc5947-rgb-micropython
+  CMODULES: $CI_BUILDS_DIR/c-modules
 
 fetch-micropython:
   stage: prepare
@@ -31,7 +32,7 @@ mpy-cross:
 stm32:
   stage: build
   script:
-    - make -C micropython/ports/stm32 USER_C_MODULES=$CI_BUILDS_DIR CFLAGS_EXTRA="-DMODULE_TLC5947_ENABLED=1"
+    - make -C micropython/ports/stm32 USER_C_MODULES=$CMODULES CFLAGS_EXTRA="-DMODULE_TLC5947_ENABLED=1"
   dependencies:
     - mpy-cross
     - fetch-micropython

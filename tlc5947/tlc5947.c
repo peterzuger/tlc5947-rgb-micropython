@@ -413,7 +413,8 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         case pBRIGHTNESS:{ // change overall brightness
             tprintf("pBRIGHTNESS\n\r");
             hsv c = rgbtohsv(rgb12torgb(pattern->color));
-            c.v += p->brighness.brightness;
+            float new = c.v + p->brighness.brightness;
+            c.v = new <= 1.0F ? new : 1.0F;
             pattern->color = rgbtorgb12(hsvtorgb(c));
             self->data.changed = true;
             pattern->current++;

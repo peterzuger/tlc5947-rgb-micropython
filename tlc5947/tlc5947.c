@@ -907,16 +907,16 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     const char* pattern_str = mp_obj_str_get_str(pattern_in);
 
     if(!check_balanced_jumps(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, "unbalanced jumps");
+        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("unbalanced jumps"));
     }
 
     if(!check_colors(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, "invalid color Format");
+        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("invalid color Format"));
     }
 
     size_t pl = get_pattern_length(pattern_str);
     if(!pl){
-        mp_raise_ValueError("Invalid Pattern");
+        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Pattern"));
     }
 
     /**
@@ -962,12 +962,12 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
         int tmpled;
         if(!mp_obj_get_int_maybe(led_in, &tmpled)){
             delete_pattern(self, pid);
-            mp_raise_TypeError("expected int");
+            mp_raise_TypeError(MP_ERROR_TEXT("expected int"));
         }
         uint8_t led;
         if(!get_led_from_id_map(self, mp_obj_get_int(led_in), &led)){
             delete_pattern(self, pid);
-            mp_raise_ValueError("led not in id_map");
+            mp_raise_ValueError(MP_ERROR_TEXT("led not in id_map"));
         }
 
         LOCK(self);
@@ -996,7 +996,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
             if(!mp_obj_get_int_maybe(list[i], &leds[i])){
                 delete_pattern(self, pid);
                 m_free(leds);
-                mp_raise_TypeError("expected list of int");
+                mp_raise_TypeError(MP_ERROR_TEXT("expected list of int"));
             }
         }
 
@@ -1005,7 +1005,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
             if(!get_led_from_id_map(self, leds[i], &led)){
                 delete_pattern(self, pid);
                 m_free(leds);
-                mp_raise_TypeError("led not in map");
+                mp_raise_TypeError(MP_ERROR_TEXT("led not in map"));
             }
 
             LOCK(self);
@@ -1027,7 +1027,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
         m_free(leds);
     }else{
         delete_pattern(self, pid);
-        mp_raise_TypeError("expected int or list of int");
+        mp_raise_TypeError(MP_ERROR_TEXT("expected int or list of int"));
     }
 
     dump_pattern_map(self);
@@ -1041,16 +1041,16 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
     const char* pattern_str = mp_obj_str_get_str(pattern_in);
 
     if(!check_balanced_jumps(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, "unbalanced jumps");
+        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("unbalanced jumps"));
     }
 
     if(!check_colors(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, "invalid color Format");
+        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("invalid color Format"));
     }
 
     size_t pl = get_pattern_length(pattern_str);
     if(!pl){
-        mp_raise_ValueError("Invalid Pattern");
+        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Pattern"));
     }
 
     int pid = mp_obj_get_int(pid_in);
@@ -1063,7 +1063,7 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
         }
 
     if((pid <= 0) || (pos == -1))
-        mp_raise_ValueError("Invalid Pattern ID");
+        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Pattern ID"));
 
     token_t* new_tokens = m_malloc_maybe(sizeof(token_t) * pl);
 
@@ -1103,7 +1103,7 @@ STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     uint8_t led;
     if(!get_led_from_id_map(self, mp_obj_get_int(led_in), &led)){
-        mp_raise_ValueError("led not in map");
+        mp_raise_ValueError(MP_ERROR_TEXT("led not in map"));
     }
 
     rgb8 c = rgb12torgb8(get_buffer(self->buffer, led));
@@ -1151,13 +1151,13 @@ STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map){
             }else if(j == -1){
                 self->id_map[i] = 0xFF;
             }else{
-                mp_raise_ValueError("led out of range");
+                mp_raise_ValueError(MP_ERROR_TEXT("led out of range"));
             }
         }else{
             // failed to get int
             for(uint32_t k = 0; k < 8; k++)
                 self->id_map[k] = k;
-            mp_raise_TypeError("can't convert to int");
+            mp_raise_TypeError(MP_ERROR_TEXT("can't convert to int"));
         }
     }
     return mp_const_none;

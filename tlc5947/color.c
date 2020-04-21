@@ -75,76 +75,76 @@ rgb8 get_rgb8(const char* s){
 rgb get_rgb(const char* s){
     rgb8 c = get_rgb8(s);
     rgb _c;
-    _c.r = (float)c.r/255;
-    _c.g = (float)c.g/255;
-    _c.b = (float)c.b/255;
+    _c.r = (float)c.r / 255;
+    _c.g = (float)c.g / 255;
+    _c.b = (float)c.b / 255;
     return _c;
 }
 
 
 rgb8 rgb12torgb8(rgb12 c){
     rgb8 _c;
-    _c.r = (uint8_t)(c.r/RGB12_MAGIC1);
-    _c.g = (uint8_t)(c.g/RGB12_MAGIC1);
-    _c.b = (uint8_t)(c.b/RGB12_MAGIC1);
+    _c.r = (uint8_t)(c.r / RGB12_MAGIC1);
+    _c.g = (uint8_t)(c.g / RGB12_MAGIC1);
+    _c.b = (uint8_t)(c.b / RGB12_MAGIC1);
     return _c;
 }
 
 rgb rgb12torgb(rgb12 c){
     rgb _c;
-    _c.r = ((float)c.r)/((float)4095);
-    _c.g = ((float)c.g)/((float)4095);
-    _c.b = ((float)c.b)/((float)4095);
+    _c.r = ((float)c.r) / ((float)4095);
+    _c.g = ((float)c.g) / ((float)4095);
+    _c.b = ((float)c.b) / ((float)4095);
     return _c;
 }
 
 
 rgb12 rgb8torgb12(rgb8 c){
     rgb12 _c;
-    _c.r = (uint16_t)(c.r*RGB12_MAGIC1);
-    _c.g = (uint16_t)(c.g*RGB12_MAGIC1);
-    _c.b = (uint16_t)(c.b*RGB12_MAGIC1);
+    _c.r = (uint16_t)(c.r * RGB12_MAGIC1);
+    _c.g = (uint16_t)(c.g * RGB12_MAGIC1);
+    _c.b = (uint16_t)(c.b * RGB12_MAGIC1);
     return _c;
 }
 
 rgb rgb8torgb(rgb8 c){
     rgb _c;
-    _c.r = ((float)c.r)/((float)255);
-    _c.g = ((float)c.g)/((float)255);
-    _c.b = ((float)c.b)/((float)255);
+    _c.r = ((float)c.r) / ((float)255);
+    _c.g = ((float)c.g) / ((float)255);
+    _c.b = ((float)c.b) / ((float)255);
     return _c;
 }
 
 
 rgb8 rgbtorgb8(rgb c){
     rgb8 _c;
-    _c.r = (uint8_t)(c.r*((float)255));
-    _c.g = (uint8_t)(c.g*((float)255));
-    _c.b = (uint8_t)(c.b*((float)255));
+    _c.r = (uint8_t)(c.r * ((float)255));
+    _c.g = (uint8_t)(c.g * ((float)255));
+    _c.b = (uint8_t)(c.b * ((float)255));
     return _c;
 }
 
 rgb12 rgbtorgb12(rgb c){
     rgb12 _c;
-    _c.r = (uint16_t)(c.r*((float)4095));
-    _c.g = (uint16_t)(c.g*((float)4095));
-    _c.b = (uint16_t)(c.b*((float)4095));
+    _c.r = (uint16_t)(c.r * ((float)4095));
+    _c.g = (uint16_t)(c.g * ((float)4095));
+    _c.b = (uint16_t)(c.b * ((float)4095));
     return _c;
 }
 
 hsv hsvfade(hsv a, hsv b, uint32_t steps, uint32_t step){
     hsv c;
-    c.h = a.h + (((b.h-a.h)/steps)*step);
-    c.s = a.s + (((b.s-a.s)/steps)*step);
-    c.v = a.v + (((b.v-a.v)/steps)*step);
+    c.h = a.h + (((b.h - a.h) / steps) * step);
+    c.s = a.s + (((b.s - a.s) / steps) * step);
+    c.v = a.v + (((b.v - a.v) / steps) * step);
     return c;
 }
 
 rgb12 rgb12fade(rgb12 a, rgb12 b, uint32_t steps, uint32_t step){
     rgb12 c;
-    c.r = (a.r > b.r)? a.r - (((a.r-b.r)/steps)*step): a.r + (((b.r-a.r)/steps)*step);
-    c.g = (a.g > b.g)? a.g - (((a.g-b.g)/steps)*step): a.g + (((b.g-a.g)/steps)*step);
-    c.b = (a.b > b.b)? a.b - (((a.b-b.b)/steps)*step): a.b + (((b.b-a.b)/steps)*step);
+    c.r = (a.r > b.r) ? a.r - (((a.r - b.r) / steps) * step) : a.r + (((b.r - a.r) / steps) * step);
+    c.g = (a.g > b.g) ? a.g - (((a.g - b.g) / steps) * step) : a.g + (((b.g - a.g) / steps) * step);
+    c.b = (a.b > b.b) ? a.b - (((a.b - b.b) / steps) * step) : a.b + (((b.b - a.b) / steps) * step);
     return c;
 }
 
@@ -182,27 +182,27 @@ bool hsvvalid(hsv c){
 hsv rgbtohsv(rgb c){
     hsv _c;
     float min, max, delta;
-    min = min3( c.r, c.g, c.b );
-    max = max3( c.r, c.g, c.b );
+    min = min3(c.r, c.g, c.b);
+    max = max3(c.r, c.g, c.b);
     _c.v = max;                         // v
     delta = max - min;
-    if( max != 0 )
+    if(max != 0){
         _c.s = delta / max;             // s
-    else{
+    }else{
         // r = g = b = 0                // s = 0, v is undefined
         _c.s = 0;
         _c.h = -1;
         return _c;
     }
 
-    if( c.r == max )
+    if(c.r == max)
         _c.h = ( c.g - c.b ) / delta;        // between yellow & magenta
     else if( c.g == max )
         _c.h = 2 + ( c.b - c.r ) / delta;    // between cyan & yellow
     else
         _c.h = 4 + ( c.r - c.g ) / delta;    // between magenta & cyan
     _c.h *= 60;                              // degrees
-    if( _c.h < 0 )
+    if(_c.h < 0)
         _c.h += 360;
     return _c;
 }
@@ -211,7 +211,7 @@ rgb hsvtorgb(hsv c){
     rgb _c;
     int i;
     float f, p, q, t;
-    if( c.s == 0 ){
+    if(c.s == 0){
         // achromatic (grey)
         _c.r = _c.g = _c.b = c.v;
         return _c;

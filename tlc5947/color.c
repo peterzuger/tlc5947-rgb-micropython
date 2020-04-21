@@ -58,9 +58,9 @@ static uint8_t get_byte(const char* s){
 
 rgb12 get_rgb12(const char* s){
     rgb12 c;
-    c.r = get_byte(&s[1]) * RGB12_MAGIC2;
-    c.g = get_byte(&s[3]) * RGB12_MAGIC2;
-    c.b = get_byte(&s[5]) * RGB12_MAGIC2;
+    c.r = (uint16_t)(get_byte(&s[1]) * RGB12_MAGIC2);
+    c.g = (uint16_t)(get_byte(&s[3]) * RGB12_MAGIC2);
+    c.b = (uint16_t)(get_byte(&s[5]) * RGB12_MAGIC2);
     return c;
 }
 
@@ -84,9 +84,9 @@ rgb get_rgb(const char* s){
 
 rgb8 rgb12torgb8(rgb12 c){
     rgb8 _c;
-    _c.r = c.r/RGB12_MAGIC1;
-    _c.g = c.g/RGB12_MAGIC1;
-    _c.b = c.b/RGB12_MAGIC1;
+    _c.r = (uint8_t)(c.r/RGB12_MAGIC1);
+    _c.g = (uint8_t)(c.g/RGB12_MAGIC1);
+    _c.b = (uint8_t)(c.b/RGB12_MAGIC1);
     return _c;
 }
 
@@ -101,9 +101,9 @@ rgb rgb12torgb(rgb12 c){
 
 rgb12 rgb8torgb12(rgb8 c){
     rgb12 _c;
-    _c.r = c.r*RGB12_MAGIC1;
-    _c.g = c.g*RGB12_MAGIC1;
-    _c.b = c.b*RGB12_MAGIC1;
+    _c.r = (uint16_t)(c.r*RGB12_MAGIC1);
+    _c.g = (uint16_t)(c.g*RGB12_MAGIC1);
+    _c.b = (uint16_t)(c.b*RGB12_MAGIC1);
     return _c;
 }
 
@@ -118,17 +118,17 @@ rgb rgb8torgb(rgb8 c){
 
 rgb8 rgbtorgb8(rgb c){
     rgb8 _c;
-    _c.r = c.r*((float)255);
-    _c.g = c.g*((float)255);
-    _c.b = c.b*((float)255);
+    _c.r = (uint8_t)(c.r*((float)255));
+    _c.g = (uint8_t)(c.g*((float)255));
+    _c.b = (uint8_t)(c.b*((float)255));
     return _c;
 }
 
 rgb12 rgbtorgb12(rgb c){
     rgb12 _c;
-    _c.r = c.r*((float)4095);
-    _c.g = c.g*((float)4095);
-    _c.b = c.b*((float)4095);
+    _c.r = (uint16_t)(c.r*((float)4095));
+    _c.g = (uint16_t)(c.g*((float)4095));
+    _c.b = (uint16_t)(c.b*((float)4095));
     return _c;
 }
 
@@ -217,7 +217,7 @@ rgb hsvtorgb(hsv c){
         return _c;
     }
     c.h /= 60;                          // sector 0 to 5
-    i = floorf( c.h );
+    i = (int)floorf( c.h );
     f = c.h - i;                        // factorial part of h
     p = c.v * ( 1 - c.s );
     q = c.v * ( 1 - c.s * f );

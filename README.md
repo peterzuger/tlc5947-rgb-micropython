@@ -10,6 +10,14 @@ This is a driver for the [TLC5947](http://www.ti.com/product/TLC5947) 24 Channel
 
 ## Getting Started <a name = "getting_started"></a>
 
+### Wiring
+This driver is designed for driving RGB LED's that are connected to a TLC5947.
+The Wiring of the RGB led's is currently fixed to the order RGB (Red/Green/Blue).
+
+<p align="center"><img src="doc/schematic.png" alt="doc/schematic.png"></p>
+
+If your application requires a different type of wiring, please submit an issue.
+
 ### Prerequisites
 This driver is designed for [micropython](https://github.com/micropython/micropython).
 
@@ -65,4 +73,4 @@ The module is available by just importing tlc5947:
 import tlc5947
 ```
 
-The module documentation is coming soon!
+The documentation for the module is [here](doc/tlc5947.md).

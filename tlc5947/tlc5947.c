@@ -629,7 +629,7 @@ STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
     mp_hal_pin_write(self->blank, mp_obj_is_true(val));
 
     return mp_const_none;
-};
+}
 
 /**
  * This function checks if all the jumps ([]) in the string are balanced.
@@ -1033,7 +1033,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     dump_pattern_map(self);
 
     return mp_obj_new_int(pid);
-};
+}
 
 STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
@@ -1118,7 +1118,7 @@ STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     str[6] = gethex( c.b&0x0F);
     str[7] = 0;
     return mp_obj_new_str(str, 7);
-};
+}
 
 STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);

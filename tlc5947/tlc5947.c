@@ -742,6 +742,12 @@ float atof(const char *s){
     float a = 0.0;
     int e = 0;
     int c;
+    bool sign = false;
+
+    if (*s == '-'){
+        s++;
+        sign = true;
+    }
 
     while ((c = *s++) != '\0' && isdigit(c)) {
         a = a * 10.0f + (c - '0');
@@ -780,7 +786,7 @@ float atof(const char *s){
         a *= 0.1f;
         e++;
     }
-    return a;
+    return sign ? -a : a;
 }
 
 static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){

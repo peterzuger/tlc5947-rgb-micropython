@@ -369,6 +369,11 @@ void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
 #define tprintf(f, ...)
 #endif
 
+float clamp(float d, float min, float max) {
+    const float t = d < min ? min : d;
+    return t > max ? max : t;
+}
+
 // returns true if the pattern is done
 static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern){
     while(true){
@@ -413,8 +418,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         case pBRIGHTNESS:{ // change overall brightness
             tprintf("pBRIGHTNESS\n\r");
             hsv c = rgbtohsv(rgb12torgb(pattern->color));
-            float new = c.v + p->brighness.brightness;
-            c.v = new <= 1.0F ? new : 1.0F;
+            c.v = clamp(c.v + p->brighness.brightness, 0.0F, 1.0F);
             pattern->color = rgbtorgb12(hsvtorgb(c));
             self->data.changed = true;
             pattern->current++;

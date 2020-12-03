@@ -134,6 +134,7 @@ typedef struct _pattern_base_t{
         uint8_t pos;
     }stack;
     float brightness;    // brightness from 0 -> 1
+    rgb12 base_color;    // the original color value
     rgb12 color;         // the led setting algorythm used this color,
                          // it is pre calculated every tick
     bool visible;
@@ -382,7 +383,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         switch(p->type){
         case pCOLOR:{      // change color
             tprintf("pCOLOR\n\r");
-            pattern->color = p->color.color;
+            pattern->base_color = pattern->color = p->color.color;
             pattern->brightness = 1.0F;
             self->data.changed = true;
             pattern->current++;
@@ -420,7 +421,13 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         case pBRIGHTNESS:{ // change overall brightness
             tprintf("pBRIGHTNESS\n\r");
             self->data.changed = true;
+
             pattern->brightness = clamp(pattern->brightness + p->brighness.brightness, 0.0F, 1.0F);
+
+            pattern->color.r = (uint16_t)((float)pattern->base_color.r * pattern->brightness);
+            pattern->color.g = (uint16_t)((float)pattern->base_color.g * pattern->brightness);
+            pattern->color.b = (uint16_t)((float)pattern->base_color.b * pattern->brightness);
+
             pattern->current++;
             if(pattern->current == pattern->len)
                 return true; // pattern is done, no more tokens
@@ -596,13 +603,6 @@ static bool do_tick(tlc5947_tlc5947_obj_t* self){
                     for(uint16_t j = 0; j < self->data.patterns.len; j++){
                         if(self->data.patterns.list[j].id == pid){
                             color = self->data.patterns.list[j].color;
-
-                            if(self->data.patterns.list[j].brightness != 1.0F){
-                                float b = self->data.patterns.list[j].brightness;
-                                color.r = (uint16_t)((float)color.r * b);
-                                color.g = (uint16_t)((float)color.g * b);
-                                color.b = (uint16_t)((float)color.b * b);
-                            }
 
                             if(self->data.patterns.list[j].visible || (pid_pos == 0))
                                 done = true;

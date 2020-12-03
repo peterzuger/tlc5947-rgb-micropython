@@ -133,6 +133,7 @@ typedef struct _pattern_base_t{
         int16_t stack[MAX_STACK];
         uint8_t pos;
     }stack;
+    float brightness;    // brightness from 0 -> 1
     rgb12 color;         // the led setting algorythm used this color,
                          // it is pre calculated every tick
     bool visible;
@@ -382,6 +383,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         case pCOLOR:{      // change color
             tprintf("pCOLOR\n\r");
             pattern->color = p->color.color;
+            pattern->brightness = 1.0F;
             self->data.changed = true;
             pattern->current++;
             if(pattern->current == pattern->len)
@@ -417,10 +419,8 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
 
         case pBRIGHTNESS:{ // change overall brightness
             tprintf("pBRIGHTNESS\n\r");
-            hsv c = rgbtohsv(rgb12torgb(pattern->color));
-            c.v = clamp(c.v + p->brighness.brightness, 0.0F, 1.0F);
-            pattern->color = rgbtorgb12(hsvtorgb(c));
             self->data.changed = true;
+            pattern->brightness = clamp(pattern->brightness + p->brighness.brightness, 0.0F, 1.0F);
             pattern->current++;
             if(pattern->current == pattern->len)
                 return true; // pattern is done, no more tokens
@@ -596,6 +596,14 @@ static bool do_tick(tlc5947_tlc5947_obj_t* self){
                     for(uint16_t j = 0; j < self->data.patterns.len; j++){
                         if(self->data.patterns.list[j].id == pid){
                             color = self->data.patterns.list[j].color;
+
+                            if(self->data.patterns.list[j].brightness != 1.0F){
+                                float b = self->data.patterns.list[j].brightness;
+                                color.r = (uint16_t)((float)color.r * b);
+                                color.g = (uint16_t)((float)color.g * b);
+                                color.b = (uint16_t)((float)color.b * b);
+                            }
+
                             if(self->data.patterns.list[j].visible || (pid_pos == 0))
                                 done = true;
                             --pid_pos;

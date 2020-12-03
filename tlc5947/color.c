@@ -211,7 +211,7 @@ rgb hsvtorgb(hsv c){
     rgb _c;
     int i;
     float f, p, q, t;
-    if(c.s == 0){
+    if(c.s == 0 || c.v == 0){
         // achromatic (grey)
         _c.r = _c.g = _c.b = c.v;
         return _c;

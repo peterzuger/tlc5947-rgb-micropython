@@ -57,11 +57,7 @@ static uint8_t get_byte(const char* s){
 
 
 rgb12 get_rgb12(const char* s){
-    rgb12 c;
-    c.r = (uint16_t)(get_byte(&s[1]) * RGB12_MAGIC2);
-    c.g = (uint16_t)(get_byte(&s[3]) * RGB12_MAGIC2);
-    c.b = (uint16_t)(get_byte(&s[5]) * RGB12_MAGIC2);
-    return c;
+    return rgb8torgb12(get_rgb8(s));
 }
 
 rgb8 get_rgb8(const char* s){

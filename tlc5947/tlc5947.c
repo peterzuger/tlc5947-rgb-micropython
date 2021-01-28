@@ -814,6 +814,7 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             dprintf("HSV COLOR\n\r");
             pat[i].type = pCOLOR;
             // TODO: implement HSV color
+            mp_raise_NotImplementedError(MP_ERROR_TEXT("HSV color"));
             break;
 
         case '@':

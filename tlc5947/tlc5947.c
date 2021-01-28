@@ -1224,9 +1224,9 @@ static rgb12 get_buffer(uint8_t* buf, int led){
 }
 
 
-STATIC const mp_map_elem_t tlc5947_globals_table[]={
     { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947) },
     { MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947), (mp_obj_t)&tlc5947_tlc5947_type },
+STATIC const mp_rom_map_elem_t tlc5947_globals_table[] = {
 };
 
 STATIC MP_DEFINE_CONST_DICT(

@@ -184,7 +184,7 @@ typedef struct _tlc5947_tlc5947_obj_t{
 #define LOCK(self)         do{(self)->lock++;                    }while(0)
 #define UNLOCK(self)       do{if(IS_LOCKED((self))) (self)->lock--;}while(0)
 #define IS_LOCKED(self)    ((self)->lock)
-#define IS_UNLOCKED(self) (!(self)->lock)
+#define IS_UNLOCKED(self)  (!(self)->lock)
 
 // tlc5947 buffer functions
 static bool get_led_from_id_map(tlc5947_tlc5947_obj_t* self, uint8_t led_in, uint8_t* led);
@@ -213,20 +213,20 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_get_obj, tlc5947_tlc5947_get);
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_exists_obj, tlc5947_tlc5947_exists);
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_id_map_obj,tlc5947_tlc5947_set_id_map);
 
-STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[]={
+STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
     // class methods
-    { MP_ROM_QSTR(MP_QSTR_blank), MP_ROM_PTR(&tlc5947_tlc5947_blank_obj) },
-    { MP_ROM_QSTR(MP_QSTR_set), MP_ROM_PTR(&tlc5947_tlc5947_set_obj) },
-    { MP_ROM_QSTR(MP_QSTR_replace), MP_ROM_PTR(&tlc5947_tlc5947_replace_obj) },
-    { MP_ROM_QSTR(MP_QSTR_delete), MP_ROM_PTR(&tlc5947_tlc5947_delete_obj) },
-    { MP_ROM_QSTR(MP_QSTR_get), MP_ROM_PTR(&tlc5947_tlc5947_get_obj) },
-    { MP_ROM_QSTR(MP_QSTR_exists), MP_ROM_PTR(&tlc5947_tlc5947_exists_obj) },
+    { MP_ROM_QSTR(MP_QSTR_blank),      MP_ROM_PTR(&tlc5947_tlc5947_blank_obj)      },
+    { MP_ROM_QSTR(MP_QSTR_set),        MP_ROM_PTR(&tlc5947_tlc5947_set_obj)        },
+    { MP_ROM_QSTR(MP_QSTR_replace),    MP_ROM_PTR(&tlc5947_tlc5947_replace_obj)    },
+    { MP_ROM_QSTR(MP_QSTR_delete),     MP_ROM_PTR(&tlc5947_tlc5947_delete_obj)     },
+    { MP_ROM_QSTR(MP_QSTR_get),        MP_ROM_PTR(&tlc5947_tlc5947_get_obj)        },
+    { MP_ROM_QSTR(MP_QSTR_exists),     MP_ROM_PTR(&tlc5947_tlc5947_exists_obj)     },
     { MP_ROM_QSTR(MP_QSTR_set_id_map), MP_ROM_PTR(&tlc5947_tlc5947_set_id_map_obj) },
 };
 STATIC MP_DEFINE_CONST_DICT(tlc5947_tlc5947_locals_dict,tlc5947_tlc5947_locals_dict_table);
 
 
-const mp_obj_type_t tlc5947_tlc5947_type={
+const mp_obj_type_t tlc5947_tlc5947_type = {
     // "inherit" the type "type"
     { &mp_type_type },
     // give it a name
@@ -260,6 +260,7 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
     memset(&self->data, 0, sizeof(self->data));
     self->data.changed = true; // make sure all leds are set to BLACK on startup
 
+    // setup the default id_map
     for(uint16_t i = 0; i < 8; i++)
         self->id_map[i] = i;
 
@@ -270,7 +271,7 @@ STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
                                   mp_obj_t self_in,mp_print_kind_t kind){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "tlc5947(xlat=%d:%d, blank=%d:%d, lenght=%d)",
-              self->xlat->port,self->xlat->pin,self->blank->port,self->blank->pin);
+              self->xlat->port, self->xlat->pin, self->blank->port, self->blank->pin);
 }
 
 
@@ -575,7 +576,6 @@ static bool delete_pattern(tlc5947_tlc5947_obj_t* self, uint16_t pid){
     return false;
 }
 
-
 static const rgb12 BLACK = {.r = 0, .g = 0, .b = 0};
 static bool do_tick(tlc5947_tlc5947_obj_t* self){
     // first update all patterns, and delete finished patterns
@@ -619,8 +619,6 @@ static bool do_tick(tlc5947_tlc5947_obj_t* self){
     return self->data.changed;
 }
 
-
-
 STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     if(IS_UNLOCKED(self)){
@@ -633,7 +631,6 @@ STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* con
     }
     return mp_const_none;
 }
-
 
 STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
@@ -672,7 +669,7 @@ static bool check_balanced_jumps(const char* s){
     return true;
 }
 
-static inline  int isdigit(int c){return ((c>='0')&&(c<='9'));}
+static inline int isdigit(int c){return ((c>='0')&&(c<='9'));}
 static inline int isxdigit(int c){return (isdigit(c) || ((c>='A')&&(c<='F')) || ((c>='a')&&(c<='f')));}
 
 /**
@@ -756,45 +753,45 @@ float atof(const char *s){
     int c;
     bool sign = false;
 
-    if (*s == '-'){
+    if(*s == '-'){
         s++;
         sign = true;
     }
 
-    while ((c = *s++) != '\0' && isdigit(c)) {
+    while((c = *s++) != '\0' && isdigit(c)){
         a = a * 10.0f + (c - '0');
     }
 
-    if (c == '.') {
-        while ((c = *s++) != '\0' && isdigit(c)) {
+    if(c == '.'){
+        while((c = *s++) != '\0' && isdigit(c)){
             a = a * 10.0f + (c - '0');
             e = e-1;
         }
     }
 
-    if (c == 'e' || c == 'E') {
+    if(c == 'e' || c == 'E'){
         int sign = 1;
         int i = 0;
         c = *s++;
-        if (c == '+')
+        if(c == '+')
             c = *s++;
-        else if (c == '-') {
+        else if(c == '-'){
             c = *s++;
             sign = -1;
         }
-        while (isdigit(c)) {
+        while(isdigit(c)){
             i = i*10 + (c - '0');
             c = *s++;
         }
         e += i*sign;
     }
 
-    while (e > 0) {
+    while(e > 0){
         a *= 10.0f;
         e--;
     }
 
-    while (e < 0) {
+    while(e < 0){
         a *= 0.1f;
         e++;
     }
@@ -1224,9 +1221,9 @@ static rgb12 get_buffer(uint8_t* buf, int led){
 }
 
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947) },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947), (mp_obj_t)&tlc5947_tlc5947_type },
 STATIC const mp_rom_map_elem_t tlc5947_globals_table[] = {
+    { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947)  },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947),  MP_ROM_PTR(&tlc5947_tlc5947_type) },
 };
 
 STATIC MP_DEFINE_CONST_DICT(
@@ -1234,7 +1231,7 @@ STATIC MP_DEFINE_CONST_DICT(
     tlc5947_globals_table
     );
 
-const mp_obj_module_t mp_module_tlc5947={
+const mp_obj_module_t mp_module_tlc5947 = {
     .base = { &mp_type_module },
     .globals = (mp_obj_dict_t*)&mp_module_tlc5947_globals,
 };

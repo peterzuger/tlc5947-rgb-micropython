@@ -117,7 +117,7 @@ typedef struct _token_t{
         struct{                                        }forever;
         struct{uint16_t new_pp;                        }jump;
         struct{                                        }mark;
-        struct{int8_t value;                           }push;
+        struct{int16_t value;                          }push;
         struct{                                        }pop;
     };
 }token_t;

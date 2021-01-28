@@ -112,6 +112,10 @@ to the specified value.
 The stack is only useful together with the `[` and `]` tokens, see
 their example section for examples of the stack operators.
 
+The stack is a fixed int16\_t array, push/pop are checked to not
+write over the stack, and values are automatically truncated to
+int16\_t.
+
 
 ## >                  pop a value from the stack
 This token can be used to pop a value of the stack. The value is not
@@ -122,7 +126,8 @@ value with the previous token.
 
 ## +                  increment current stack value
 This increments the value that is currently at the top of the stack.
-Its currently only used for creating an infinite loop together with JNZ and the marker.
+Its currently only used for creating an infinite loop together with
+JNZ and the marker.
 
 
 ### Examples

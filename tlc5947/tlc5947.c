@@ -903,6 +903,12 @@ const mp_obj_type_t tlc5947_tlc5947_type = {
 };
 
 
+/**
+ * Python: tlc5947.tlc5947(spi, xlat, blank)
+ * @param spi
+ * @param xlat
+ * @param blank
+ */
 mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
                                   size_t n_args,
                                   size_t n_kw,
@@ -928,6 +934,10 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
     return MP_OBJ_FROM_PTR(self);
 }
 
+/**
+ * Python: print(tlc5947.tlc5947(spi, xlat, blank))
+ * @param obj
+ */
 STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
                                   mp_obj_t self_in,mp_print_kind_t kind){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
@@ -935,6 +945,10 @@ STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
               self->xlat->port, self->xlat->pin, self->blank->port, self->blank->pin);
 }
 
+/**
+ * Python: tlc5947.tlc5947.__call__(self)
+ * @param self
+ */
 STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     if(IS_UNLOCKED(self)){
@@ -948,6 +962,11 @@ STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* con
     return mp_const_none;
 }
 
+/**
+ * Python: tlc5947.tlc5947.blank(self, val)
+ * @param self
+ * @param val
+ */
 STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
@@ -956,6 +975,12 @@ STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
     return mp_const_none;
 }
 
+/**
+ * Python: tlc5947.tlc5947.set(self, led, pattern)
+ * @param self
+ * @param led
+ * @param pattern
+ */
 STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
@@ -1091,6 +1116,12 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     return mp_obj_new_int(pid);
 }
 
+/**
+ * Python: tlc5947.tlc5947.replace(self, pid, pattern)
+ * @param self
+ * @param pid
+ * @param pattern
+ */
 STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
@@ -1144,6 +1175,11 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
     return mp_obj_new_int(pid);
 }
 
+/**
+ * Python: tlc5947.tlc5947.get(self, led)
+ * @param self
+ * @param led
+ */
 STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     uint8_t led;
@@ -1165,6 +1201,11 @@ STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     return mp_obj_new_str(str, 7);
 }
 
+/**
+ * Python: tlc5947.tlc5947.exists(self, pid)
+ * @param self
+ * @param pid
+ */
 STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
@@ -1183,6 +1224,11 @@ STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
     return mp_const_false;
 }
 
+/**
+ * Python: tlc5947.tlc5947.delete(self, pid)
+ * @param self
+ * @param pid
+ */
 STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     int pid = mp_obj_get_int(pid_in);
@@ -1190,6 +1236,11 @@ STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
     return mp_obj_new_bool(delete_pattern(self, pid));
 }
 
+/**
+ * Python: tlc5947.tlc5947.set_id_map(self, map)
+ * @param self
+ * @param map
+ */
 STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_obj_t *items;

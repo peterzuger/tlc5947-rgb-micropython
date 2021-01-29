@@ -231,7 +231,7 @@ typedef struct _tlc5947_tlc5947_obj_t{
 #define dprintf(f, ...)
 #endif
 
-void dump_pattern(pattern_base_t* pattern){
+static void dump_pattern(pattern_base_t* pattern){
     dprintf("\033[31m");
     dprintf("pattern dump:\n\r"
             "color: R: %02x G: %02x B: %02x\n\r"
@@ -265,7 +265,7 @@ void dump_pattern(pattern_base_t* pattern){
     dprintf("\033[0m");
 }
 
-void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
+static void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
     dprintf("dump_pattern_map:\n\r");
     for(size_t i = 0; i < 8; i++){
         dprintf("led %d, len = %d:", (unsigned)i, self->data.pattern_map[i].len);
@@ -283,7 +283,7 @@ void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
 #endif
 
 
-float clamp(float d, float min, float max) {
+static float clamp(float d, float min, float max) {
     const float t = d < min ? min : d;
     return t > max ? max : t;
 }
@@ -497,7 +497,7 @@ static bool get_led_from_id_map(tlc5947_tlc5947_obj_t* self, uint8_t led_in, uin
     return true;
 }
 
-const uint8_t lut[] = {0,4,9,13,18,22,27,31};
+static const uint8_t lut[] = {0,4,9,13,18,22,27,31};
 static void set_buffer(uint8_t* buf, int led, rgb12 c){
     if(!(led % 2)){
         buf[lut[led]  ]  = (uint8_t)(c.b >> 4);
@@ -672,7 +672,7 @@ static int atoi(const char *p) {
     return k;
 }
 
-float atof(const char *s){
+static float atof(const char *s){
     // This function stolen from either Rolf Neugebauer or Andrew Tolmach.
     // Probably Rolf.
     float a = 0.0;

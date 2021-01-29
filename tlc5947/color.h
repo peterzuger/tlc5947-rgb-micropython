@@ -52,12 +52,6 @@ typedef struct{
     float b; /*< blue  [0 -> 1] */
 }rgb;
 
-typedef struct{
-    float h; /*< hue        [0 -> 360] */
-    float s; /*< saturation [0 -> 1] */
-    float v; /*< value      [0 -> 1] */
-}hsv;
-
 
 #if defined(__cplusplus)
 extern "C"{
@@ -86,17 +80,11 @@ rgb rgb8torgb(rgb8 c)__attribute__ ((const));
 rgb12 rgbtorgb12(rgb c)__attribute__ ((const));
 rgb8 rgbtorgb8(rgb c)__attribute__ ((const));
 
-hsv hsvfade(hsv a, hsv b, uint32_t steps, uint32_t step);
 rgb12 rgb12fade(rgb12 a, rgb12 b, uint32_t steps, uint32_t step);
 
 #define rgb12valid (1) /* cannot be invalid */
 #define rgb8valid (1) /* cannot be invalid */
 bool rgbvalid(rgb c)__attribute__ ((const));
-bool hsvvalid(hsv c)__attribute__ ((const));
-
-
-rgb hsvtorgb(hsv c)__attribute__ ((const));
-hsv rgbtohsv(rgb c)__attribute__ ((const));
 
 
 #if defined(__cplusplus)

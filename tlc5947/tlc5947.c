@@ -46,7 +46,6 @@
  * LED language
  *
  * "#RRGGBB"      this is a color in RGB format
- * "$220,1.0,0.5" this is a color in HSV format
  * "|50"          this sleeps for 50 ticks
  * "\b25"         this decreases brightness by 25%
  * "<5"           this pushes 5 onto the stack
@@ -75,8 +74,7 @@
  *
  *   "<5[#FF0000<10[|50\b-0.1-]>-|50]"
  *     This is a more complex pattern, it sets the led to full red, and then
- *     every 50 ticks decreases the brightness by 0.1 in HSV color space and
- *     this is repeated 5 times.
+ *     every 50 ticks decreases the brightness by 0.1 and this is repeated 5 times.
  */
 typedef enum{
     pCOLOR,       // change color
@@ -610,7 +608,7 @@ static inline __attribute__((pure)) char gethex(uint8_t i){
 
 /**
  * This function checks that all colors used
- * in this string are valid RGB or HSV colors.
+ * in this string are valid RGB.
  */
 static bool check_colors(const char* s){
     while(*s){
@@ -619,8 +617,6 @@ static bool check_colors(const char* s){
             for(uint16_t i = 0; i < 6; i++)
                 if(!isxdigit(s[i]))
                     return false;
-            break;
-        case '$':// TODO
             break;
         default:
             break;
@@ -636,11 +632,6 @@ static size_t get_pattern_length(const char* s){
         case '#':
             len++;
             s += 6;
-            break;
-
-        case '$':
-            len++;
-            s += 11;
             break;
 
         case '\b':
@@ -744,13 +735,6 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             pat[i].type = pCOLOR;
             pat[i].color.color = get_rgb12(--s);
             s += 7;
-            break;
-
-        case '$':
-            dprintf("HSV COLOR\n\r");
-            pat[i].type = pCOLOR;
-            // TODO: implement HSV color
-            mp_raise_NotImplementedError(MP_ERROR_TEXT("HSV color"));
             break;
 
         case '@':

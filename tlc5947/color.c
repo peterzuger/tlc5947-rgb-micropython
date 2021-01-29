@@ -147,14 +147,6 @@ rgb12 rgbtorgb12(rgb c){
     return _c;
 }
 
-hsv hsvfade(hsv a, hsv b, uint32_t steps, uint32_t step){
-    hsv c;
-    c.h = a.h + (((b.h - a.h) / steps) * step);
-    c.s = a.s + (((b.s - a.s) / steps) * step);
-    c.v = a.v + (((b.v - a.v) / steps) * step);
-    return c;
-}
-
 rgb12 rgb12fade(rgb12 a, rgb12 b, uint32_t steps, uint32_t step){
     rgb12 c;
     c.r = (a.r > b.r) ? a.r - (((a.r - b.r) / steps) * step) : a.r + (((b.r - a.r) / steps) * step);
@@ -166,13 +158,6 @@ rgb12 rgb12fade(rgb12 a, rgb12 b, uint32_t steps, uint32_t step){
 bool rgbvalid(rgb c){
     if((c.r > 1) || (c.g > 1) || (c.b > 1) ||
        ((c.r < 0) || (c.g < 0) || (c.b < 0)))
-        return false;
-    return true;
-}
-
-bool hsvvalid(hsv c){
-    if((c.s > 1) || (c.v > 1) || (c.h > 360) ||
-       ((c.s < 0) || (c.v < 0) || (c.h < 0)))
         return false;
     return true;
 }
@@ -194,82 +179,5 @@ bool hsvvalid(hsv c){
 #define max3(a,b,c) (max(max(a,b),c))
 #define min3(a,b,c) (min(min(a,b),c))
 
-hsv rgbtohsv(rgb c){
-    hsv _c;
-    float min, max, delta;
-    min = min3(c.r, c.g, c.b);
-    max = max3(c.r, c.g, c.b);
-    _c.v = max;                         // v
-    delta = max - min;
-    if(max != 0){
-        _c.s = delta / max;             // s
-    }else{
-        // r = g = b = 0                // s = 0, v is undefined
-        _c.s = 0;
-        _c.h = -1;
-        return _c;
-    }
-
-    if(c.r == max)
-        _c.h = ( c.g - c.b ) / delta;        // between yellow & magenta
-    else if( c.g == max )
-        _c.h = 2 + ( c.b - c.r ) / delta;    // between cyan & yellow
-    else
-        _c.h = 4 + ( c.r - c.g ) / delta;    // between magenta & cyan
-    _c.h *= 60;                              // degrees
-    if(_c.h < 0)
-        _c.h += 360;
-    return _c;
-}
-
-rgb hsvtorgb(hsv c){
-    rgb _c;
-    int i;
-    float f, p, q, t;
-    if(c.s == 0 || c.v == 0){
-        // achromatic (grey)
-        _c.r = _c.g = _c.b = c.v;
-        return _c;
-    }
-    c.h /= 60;                          // sector 0 to 5
-    i = (int)floorf( c.h );
-    f = c.h - i;                        // factorial part of h
-    p = c.v * ( 1 - c.s );
-    q = c.v * ( 1 - c.s * f );
-    t = c.v * ( 1 - c.s * ( 1 - f ) );
-    switch(i){
-    case 0:
-        _c.r = c.v;
-        _c.g = t;
-        _c.b = p;
-        break;
-    case 1:
-        _c.r = q;
-        _c.g = c.v;
-        _c.b = p;
-        break;
-    case 2:
-        _c.r = p;
-        _c.g = c.v;
-        _c.b = t;
-        break;
-    case 3:
-        _c.r = p;
-        _c.g = q;
-        _c.b = c.v;
-        break;
-    case 4:
-        _c.r = t;
-        _c.g = p;
-        _c.b = c.v;
-        break;
-    default:
-        _c.r = c.v;
-        _c.g = p;
-        _c.b = q;
-        break;
-    }
-    return _c;
-}
 
 #endif /* defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1 */

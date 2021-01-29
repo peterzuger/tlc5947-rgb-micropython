@@ -1183,7 +1183,6 @@ STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
     return mp_const_false;
 }
 
-STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map){
 STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     int pid = mp_obj_get_int(pid_in);
@@ -1191,9 +1190,10 @@ STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
     return mp_obj_new_bool(delete_pattern(self, pid));
 }
 
+STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_obj_t *items;
-    mp_obj_get_array_fixed_n(map, 8, &items);
+    mp_obj_get_array_fixed_n(map_in, 8, &items);
 
     for(uint32_t i = 0; i < 8; i++){
         int j;

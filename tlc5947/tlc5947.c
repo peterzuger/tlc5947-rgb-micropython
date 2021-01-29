@@ -186,94 +186,6 @@ typedef struct _tlc5947_tlc5947_obj_t{
 #define IS_LOCKED(self)    ((self)->lock)
 #define IS_UNLOCKED(self)  (!(self)->lock)
 
-// tlc5947 buffer functions
-static bool get_led_from_id_map(tlc5947_tlc5947_obj_t* self, uint8_t led_in, uint8_t* led);
-static void set_buffer(uint8_t* buf, int led, rgb12 c);
-static rgb12 get_buffer(uint8_t* buf, int led);
-
-
-mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type, size_t n_args,
-                                  size_t n_kw, const mp_obj_t *args);
-STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
-                                  mp_obj_t self_in, mp_print_kind_t kind);
-STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2);
-STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val);
-STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in);
-STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in);
-STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pattern_in);
-STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in);
-STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in);
-STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in);
-
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_blank_obj, tlc5947_tlc5947_blank);
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_set_obj, tlc5947_tlc5947_set);
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_replace_obj, tlc5947_tlc5947_replace);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_delete_obj, tlc5947_tlc5947_delete);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_get_obj, tlc5947_tlc5947_get);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_exists_obj, tlc5947_tlc5947_exists);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_id_map_obj,tlc5947_tlc5947_set_id_map);
-
-STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
-    // class methods
-    { MP_ROM_QSTR(MP_QSTR_blank),      MP_ROM_PTR(&tlc5947_tlc5947_blank_obj)      },
-    { MP_ROM_QSTR(MP_QSTR_set),        MP_ROM_PTR(&tlc5947_tlc5947_set_obj)        },
-    { MP_ROM_QSTR(MP_QSTR_replace),    MP_ROM_PTR(&tlc5947_tlc5947_replace_obj)    },
-    { MP_ROM_QSTR(MP_QSTR_delete),     MP_ROM_PTR(&tlc5947_tlc5947_delete_obj)     },
-    { MP_ROM_QSTR(MP_QSTR_get),        MP_ROM_PTR(&tlc5947_tlc5947_get_obj)        },
-    { MP_ROM_QSTR(MP_QSTR_exists),     MP_ROM_PTR(&tlc5947_tlc5947_exists_obj)     },
-    { MP_ROM_QSTR(MP_QSTR_set_id_map), MP_ROM_PTR(&tlc5947_tlc5947_set_id_map_obj) },
-};
-STATIC MP_DEFINE_CONST_DICT(tlc5947_tlc5947_locals_dict,tlc5947_tlc5947_locals_dict_table);
-
-
-const mp_obj_type_t tlc5947_tlc5947_type = {
-    // "inherit" the type "type"
-    { &mp_type_type },
-    // give it a name
-    .name = MP_QSTR_tlc5947,
-    // give it a print-function
-    .print = tlc5947_tlc5947_print,
-    // give it a constructor
-    .make_new = tlc5947_tlc5947_make_new,
-    // give it a call object
-    .call = tlc5947_tlc5947_call,
-    // and the global members
-    .locals_dict = (mp_obj_dict_t*)&tlc5947_tlc5947_locals_dict,
-};
-
-
-mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
-                                  size_t n_args,
-                                  size_t n_kw,
-                                  const mp_obj_t *args){
-    mp_arg_check_num(n_args, n_kw, 3, 3, true);
-
-    tlc5947_tlc5947_obj_t *self = m_new_obj(tlc5947_tlc5947_obj_t);
-
-    self->base.type = &tlc5947_tlc5947_type;
-
-    self->spi   = spi_from_mp_obj(args[0]);
-    self->xlat  = pin_find(args[1]);
-    self->blank = pin_find(args[2]);
-
-    memset(self->buffer, 0, 36);
-    memset(&self->data, 0, sizeof(self->data));
-    self->data.changed = true; // make sure all leds are set to BLACK on startup
-
-    // setup the default id_map
-    for(uint16_t i = 0; i < 8; i++)
-        self->id_map[i] = i;
-
-    return MP_OBJ_FROM_PTR(self);
-}
-
-STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
-                                  mp_obj_t self_in,mp_print_kind_t kind){
-    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    mp_printf(print, "tlc5947(xlat=%d:%d, blank=%d:%d, lenght=%d)",
-              self->xlat->port, self->xlat->pin, self->blank->port, self->blank->pin);
-}
-
 
 #if 0
 
@@ -371,6 +283,7 @@ void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
 #else
 #define tprintf(f, ...)
 #endif
+
 
 float clamp(float d, float min, float max) {
     const float t = d < min ? min : d;
@@ -576,6 +489,47 @@ static bool delete_pattern(tlc5947_tlc5947_obj_t* self, uint16_t pid){
     return false;
 }
 
+static bool get_led_from_id_map(tlc5947_tlc5947_obj_t* self, uint8_t led_in, uint8_t* led){
+    if((led_in < 0) || (led_in >= 8))
+        return false;
+    if(self->id_map[led_in] == 0xFF)
+        return false;
+
+    *led = self->id_map[led_in];
+    return true;
+}
+
+const uint8_t lut[] = {0,4,9,13,18,22,27,31};
+static void set_buffer(uint8_t* buf, int led, rgb12 c){
+    if(!(led % 2)){
+        buf[lut[led]  ]  = (uint8_t)(c.b >> 4);
+        buf[lut[led]+1]  = (uint8_t)(((c.b&0x0F) << 4) | ((c.g>>8)&0x0F));
+        buf[lut[led]+2]  = (uint8_t)(c.g);
+        buf[lut[led]+3]  = (uint8_t)(c.r >> 4);
+        buf[lut[led]+4]  = (uint8_t)((c.r&0x0F)<<4)|(buf[lut[led]+4]&0x0F);
+    }else{
+        buf[lut[led]  ]  = (uint8_t)(((c.b>>8)&0x0F)|(buf[lut[led]]&0xF0));
+        buf[lut[led]+1]  = (uint8_t)c.b;
+        buf[lut[led]+2]  = (uint8_t)(c.g>>4);
+        buf[lut[led]+3]  = (uint8_t)(((c.g&0x0F)<<4)|((c.r>>8)&0x0F));
+        buf[lut[led]+4]  = (uint8_t)c.r;
+    }
+}
+
+static rgb12 get_buffer(uint8_t* buf, int led){
+    rgb12 c = {0};
+    if(!(led % 2)){
+        c.r = (buf[lut[led]+3]<<4) | ((buf[lut[led]+4]&0xF0)>>4);
+        c.g = (buf[lut[led]+2]   ) | ((buf[lut[led]+1]&0x0F)<<8);
+        c.b = (buf[lut[led]  ]<<4) | ((buf[lut[led]+1]&0xF0)>>4);
+    }else{
+        c.r = (buf[lut[led]+4])    | ((buf[lut[led]+3]&0x0F)<<8);
+        c.g = (buf[lut[led]+2]<<4) | ((buf[lut[led]+3]&0xF0)>>4);
+        c.b = (buf[lut[led]+1])    | ((buf[lut[led]  ]&0x0F)<<8);
+    }
+    return c;
+}
+
 static const rgb12 BLACK = {.r = 0, .g = 0, .b = 0};
 static bool do_tick(tlc5947_tlc5947_obj_t* self){
     // first update all patterns, and delete finished patterns
@@ -619,27 +573,6 @@ static bool do_tick(tlc5947_tlc5947_obj_t* self){
     return self->data.changed;
 }
 
-STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2){
-    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    if(IS_UNLOCKED(self)){
-        if(do_tick(self)){
-            mp_hal_pin_low(self->xlat);
-            spi_transfer(self->spi, 36, self->buffer, NULL, 100);
-            mp_hal_pin_high(self->xlat);
-            self->data.changed = false;
-        }
-    }
-    return mp_const_none;
-}
-
-STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
-    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
-
-    mp_hal_pin_write(self->blank, mp_obj_is_true(val));
-
-    return mp_const_none;
-}
-
 /**
  * This function checks if all the jumps ([]) in the string are balanced.
  * If this is not the case, this pattern is invalid
@@ -671,6 +604,9 @@ static bool check_balanced_jumps(const char* s){
 
 static inline int isdigit(int c){return ((c>='0')&&(c<='9'));}
 static inline int isxdigit(int c){return (isdigit(c) || ((c>='A')&&(c<='F')) || ((c>='a')&&(c<='f')));}
+static inline __attribute__((pure)) char gethex(uint8_t i){
+    return "0123456789ABCDEF"[i];
+}
 
 /**
  * This function checks that all colors used
@@ -916,6 +852,110 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
     dprintf("parse done\n\r");
 }
 
+
+mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type, size_t n_args,
+                                  size_t n_kw, const mp_obj_t *args);
+STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
+                                  mp_obj_t self_in, mp_print_kind_t kind);
+STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2);
+STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val);
+STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in);
+STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in);
+STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in);
+STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in);
+STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pattern_in);
+STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in);
+
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_blank_obj, tlc5947_tlc5947_blank);
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_set_obj, tlc5947_tlc5947_set);
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_replace_obj, tlc5947_tlc5947_replace);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_get_obj, tlc5947_tlc5947_get);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_exists_obj, tlc5947_tlc5947_exists);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_delete_obj, tlc5947_tlc5947_delete);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_id_map_obj,tlc5947_tlc5947_set_id_map);
+
+STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
+    // class methods
+    { MP_ROM_QSTR(MP_QSTR_blank),      MP_ROM_PTR(&tlc5947_tlc5947_blank_obj)      },
+    { MP_ROM_QSTR(MP_QSTR_set),        MP_ROM_PTR(&tlc5947_tlc5947_set_obj)        },
+    { MP_ROM_QSTR(MP_QSTR_replace),    MP_ROM_PTR(&tlc5947_tlc5947_replace_obj)    },
+    { MP_ROM_QSTR(MP_QSTR_get),        MP_ROM_PTR(&tlc5947_tlc5947_get_obj)        },
+    { MP_ROM_QSTR(MP_QSTR_exists),     MP_ROM_PTR(&tlc5947_tlc5947_exists_obj)     },
+    { MP_ROM_QSTR(MP_QSTR_delete),     MP_ROM_PTR(&tlc5947_tlc5947_delete_obj)     },
+    { MP_ROM_QSTR(MP_QSTR_set_id_map), MP_ROM_PTR(&tlc5947_tlc5947_set_id_map_obj) },
+};
+STATIC MP_DEFINE_CONST_DICT(tlc5947_tlc5947_locals_dict,tlc5947_tlc5947_locals_dict_table);
+
+
+const mp_obj_type_t tlc5947_tlc5947_type = {
+    // "inherit" the type "type"
+    { &mp_type_type },
+    // give it a name
+    .name = MP_QSTR_tlc5947,
+    // give it a print-function
+    .print = tlc5947_tlc5947_print,
+    // give it a constructor
+    .make_new = tlc5947_tlc5947_make_new,
+    // give it a call object
+    .call = tlc5947_tlc5947_call,
+    // and the global members
+    .locals_dict = (mp_obj_dict_t*)&tlc5947_tlc5947_locals_dict,
+};
+
+
+mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
+                                  size_t n_args,
+                                  size_t n_kw,
+                                  const mp_obj_t *args){
+    mp_arg_check_num(n_args, n_kw, 3, 3, true);
+
+    tlc5947_tlc5947_obj_t *self = m_new_obj(tlc5947_tlc5947_obj_t);
+
+    self->base.type = &tlc5947_tlc5947_type;
+
+    self->spi   = spi_from_mp_obj(args[0]);
+    self->xlat  = pin_find(args[1]);
+    self->blank = pin_find(args[2]);
+
+    memset(self->buffer, 0, 36);
+    memset(&self->data, 0, sizeof(self->data));
+    self->data.changed = true; // make sure all leds are set to BLACK on startup
+
+    // setup the default id_map
+    for(uint16_t i = 0; i < 8; i++)
+        self->id_map[i] = i;
+
+    return MP_OBJ_FROM_PTR(self);
+}
+
+STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
+                                  mp_obj_t self_in,mp_print_kind_t kind){
+    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    mp_printf(print, "tlc5947(xlat=%d:%d, blank=%d:%d, lenght=%d)",
+              self->xlat->port, self->xlat->pin, self->blank->port, self->blank->pin);
+}
+
+STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2){
+    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    if(IS_UNLOCKED(self)){
+        if(do_tick(self)){
+            mp_hal_pin_low(self->xlat);
+            spi_transfer(self->spi, 36, self->buffer, NULL, 100);
+            mp_hal_pin_high(self->xlat);
+            self->data.changed = false;
+        }
+    }
+    return mp_const_none;
+}
+
+STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
+    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    mp_hal_pin_write(self->blank, mp_obj_is_true(val));
+
+    return mp_const_none;
+}
+
 STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
@@ -1104,17 +1144,6 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
     return mp_obj_new_int(pid);
 }
 
-
-STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pattern_in){
-    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    int pid = mp_obj_get_int(pattern_in);
-
-    return mp_obj_new_bool(delete_pattern(self, pid));
-}
-
-static inline __attribute__((pure)) char gethex(uint8_t i){
-    return "0123456789ABCDEF"[i];
-}
 STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     uint8_t led;
@@ -1155,6 +1184,13 @@ STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
 }
 
 STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map){
+STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
+    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    int pid = mp_obj_get_int(pid_in);
+
+    return mp_obj_new_bool(delete_pattern(self, pid));
+}
+
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_obj_t *items;
     mp_obj_get_array_fixed_n(map, 8, &items);
@@ -1177,48 +1213,6 @@ STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map){
         }
     }
     return mp_const_none;
-}
-
-
-static bool get_led_from_id_map(tlc5947_tlc5947_obj_t* self, uint8_t led_in, uint8_t* led){
-    if((led_in < 0) || (led_in >= 8))
-        return false;
-    if(self->id_map[led_in] == 0xFF)
-        return false;
-
-    *led = self->id_map[led_in];
-    return true;
-}
-
-const uint8_t lut[] = {0,4,9,13,18,22,27,31};
-static void set_buffer(uint8_t* buf, int led, rgb12 c){
-    if(!(led % 2)){
-        buf[lut[led]  ]  = (uint8_t)(c.b >> 4);
-        buf[lut[led]+1]  = (uint8_t)(((c.b&0x0F) << 4) | ((c.g>>8)&0x0F));
-        buf[lut[led]+2]  = (uint8_t)(c.g);
-        buf[lut[led]+3]  = (uint8_t)(c.r >> 4);
-        buf[lut[led]+4]  = (uint8_t)((c.r&0x0F)<<4)|(buf[lut[led]+4]&0x0F);
-    }else{
-        buf[lut[led]  ]  = (uint8_t)(((c.b>>8)&0x0F)|(buf[lut[led]]&0xF0));
-        buf[lut[led]+1]  = (uint8_t)c.b;
-        buf[lut[led]+2]  = (uint8_t)(c.g>>4);
-        buf[lut[led]+3]  = (uint8_t)(((c.g&0x0F)<<4)|((c.r>>8)&0x0F));
-        buf[lut[led]+4]  = (uint8_t)c.r;
-    }
-}
-
-static rgb12 get_buffer(uint8_t* buf, int led){
-    rgb12 c = {0};
-    if(!(led % 2)){
-        c.r = (buf[lut[led]+3]<<4) | ((buf[lut[led]+4]&0xF0)>>4);
-        c.g = (buf[lut[led]+2]   ) | ((buf[lut[led]+1]&0x0F)<<8);
-        c.b = (buf[lut[led]  ]<<4) | ((buf[lut[led]+1]&0xF0)>>4);
-    }else{
-        c.r = (buf[lut[led]+4])    | ((buf[lut[led]+3]&0x0F)<<8);
-        c.g = (buf[lut[led]+2]<<4) | ((buf[lut[led]+3]&0xF0)>>4);
-        c.b = (buf[lut[led]+1])    | ((buf[lut[led]  ]&0x0F)<<8);
-    }
-    return c;
 }
 
 

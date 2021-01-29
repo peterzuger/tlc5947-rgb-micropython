@@ -163,21 +163,4 @@ bool rgbvalid(rgb c){
 }
 
 
-/**
- * typesafe min(a,b) / max(a,b) macros
- * should probably be moved to a universal macro header...
- */
-#define max(a,b)                                \
-    ({ __typeof__ (a) _a = (a);                 \
-        __typeof__ (b) _b = (b);                \
-        _a > _b ? _a : _b; })
-#define min(a,b)                                \
-    ({ __typeof__ (a) _a = (a);                 \
-        __typeof__ (b) _b = (b);                \
-        _a < _b ? _a : _b; })
-
-#define max3(a,b,c) (max(max(a,b),c))
-#define min3(a,b,c) (min(min(a,b),c))
-
-
 #endif /* defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1 */

@@ -46,12 +46,6 @@ typedef struct{
     uint8_t b; /*< blue  [0 -> 255] */
 }rgb8;
 
-typedef struct{
-    float r; /*< red   [0 -> 1] */
-    float g; /*< green [0 -> 1] */
-    float b; /*< blue  [0 -> 1] */
-}rgb;
-
 
 #if defined(__cplusplus)
 extern "C"{
@@ -68,23 +62,10 @@ extern "C"{
  */
 rgb12 get_rgb12(const char* s);
 rgb8 get_rgb8(const char* s);
-rgb  get_rgb (const char* s);
-
 
 rgb8 rgb12torgb8(rgb12 c)__attribute__ ((const));
-rgb rgb12torgb(rgb12 c)__attribute__ ((const));
 
 rgb12 rgb8torgb12(rgb8 c)__attribute__ ((const));
-rgb rgb8torgb(rgb8 c)__attribute__ ((const));
-
-rgb12 rgbtorgb12(rgb c)__attribute__ ((const));
-rgb8 rgbtorgb8(rgb c)__attribute__ ((const));
-
-rgb12 rgb12fade(rgb12 a, rgb12 b, uint32_t steps, uint32_t step);
-
-#define rgb12valid (1) /* cannot be invalid */
-#define rgb8valid (1) /* cannot be invalid */
-bool rgbvalid(rgb c)__attribute__ ((const));
 
 
 #if defined(__cplusplus)

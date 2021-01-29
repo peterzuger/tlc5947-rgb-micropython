@@ -60,6 +60,7 @@ rgb12 get_rgb12(const char* s){
     return rgb8torgb12(get_rgb8(s));
 }
 
+
 rgb8 get_rgb8(const char* s){
     rgb8 c;
     c.r = get_byte(&s[1]);
@@ -68,29 +69,12 @@ rgb8 get_rgb8(const char* s){
     return c;
 }
 
-rgb get_rgb(const char* s){
-    rgb8 c = get_rgb8(s);
-    rgb _c;
-    _c.r = (float)c.r / 255;
-    _c.g = (float)c.g / 255;
-    _c.b = (float)c.b / 255;
-    return _c;
-}
-
 
 rgb8 rgb12torgb8(rgb12 c){
     rgb8 _c;
     _c.r = (uint8_t)(c.r / RGB12_MAGIC1);
     _c.g = (uint8_t)(c.g / RGB12_MAGIC1);
     _c.b = (uint8_t)(c.b / RGB12_MAGIC1);
-    return _c;
-}
-
-rgb rgb12torgb(rgb12 c){
-    rgb _c;
-    _c.r = ((float)c.r) / ((float)4095);
-    _c.g = ((float)c.g) / ((float)4095);
-    _c.b = ((float)c.b) / ((float)4095);
     return _c;
 }
 
@@ -120,46 +104,6 @@ rgb12 rgb8torgb12(rgb8 c){
     _c.g = log_map[c.g];
     _c.b = log_map[c.b];
     return _c;
-}
-
-rgb rgb8torgb(rgb8 c){
-    rgb _c;
-    _c.r = ((float)c.r) / ((float)255);
-    _c.g = ((float)c.g) / ((float)255);
-    _c.b = ((float)c.b) / ((float)255);
-    return _c;
-}
-
-
-rgb8 rgbtorgb8(rgb c){
-    rgb8 _c;
-    _c.r = (uint8_t)(c.r * ((float)255));
-    _c.g = (uint8_t)(c.g * ((float)255));
-    _c.b = (uint8_t)(c.b * ((float)255));
-    return _c;
-}
-
-rgb12 rgbtorgb12(rgb c){
-    rgb12 _c;
-    _c.r = (uint16_t)(c.r * ((float)4095));
-    _c.g = (uint16_t)(c.g * ((float)4095));
-    _c.b = (uint16_t)(c.b * ((float)4095));
-    return _c;
-}
-
-rgb12 rgb12fade(rgb12 a, rgb12 b, uint32_t steps, uint32_t step){
-    rgb12 c;
-    c.r = (a.r > b.r) ? a.r - (((a.r - b.r) / steps) * step) : a.r + (((b.r - a.r) / steps) * step);
-    c.g = (a.g > b.g) ? a.g - (((a.g - b.g) / steps) * step) : a.g + (((b.g - a.g) / steps) * step);
-    c.b = (a.b > b.b) ? a.b - (((a.b - b.b) / steps) * step) : a.b + (((b.b - a.b) / steps) * step);
-    return c;
-}
-
-bool rgbvalid(rgb c){
-    if((c.r > 1) || (c.g > 1) || (c.b > 1) ||
-       ((c.r < 0) || (c.g < 0) || (c.b < 0)))
-        return false;
-    return true;
 }
 
 

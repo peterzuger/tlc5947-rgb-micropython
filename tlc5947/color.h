@@ -78,11 +78,11 @@ rgb8 rgb12torgb8(rgb12 c)__attribute__ ((const));
 rgb12 rgb8torgb12(rgb8 c)__attribute__ ((const));
 
 void default_white_balance(white_balance_matrix m);
-rgb12 rgb12_white_balance(rgb12 c, const white_balance_matrix m);
+rgb12 rgb12_white_balance(rgb12 c, white_balance_matrix m);
 
 void default_gamut_matrix(gamut_matrix m);
-bool gamut_matrix_valid(const gamut_matrix m);
-rgb12 rgb12_gamut(rgb12 c, const gamut_matrix m);
+bool gamut_matrix_valid(gamut_matrix m);
+rgb12 rgb12_gamut(rgb12 c, gamut_matrix m);
 
 #if defined(__cplusplus)
 }

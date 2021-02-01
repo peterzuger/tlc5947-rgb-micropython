@@ -125,7 +125,7 @@ void default_white_balance(white_balance_matrix m){
         m[i] = 1.0;
 }
 
-rgb12 rgb12_white_balance(rgb12 c, const white_balance_matrix m){
+rgb12 rgb12_white_balance(rgb12 c, white_balance_matrix m){
     rgb12 _c;
     _c.r = (uint16_t)(c.r * m[0]);
     _c.g = (uint16_t)(c.g * m[1]);
@@ -136,7 +136,7 @@ rgb12 rgb12_white_balance(rgb12 c, const white_balance_matrix m){
 
 #define ADD_F(a, b) ((float)(((float)a)+((float)b)))
 #define ADD3_F(a, b, c) ((float)(ADD_F(ADD_F(a, b), ((float)(c)))))
-bool gamut_matrix_valid(const gamut_matrix m){
+bool gamut_matrix_valid(gamut_matrix m){
     for(uint8_t i = 0; i < 3; ++i)
         if( ADD3_F(m[i][0], m[i][1], m[i][2]) > 1.0 )
             return false;
@@ -149,7 +149,7 @@ void default_gamut_matrix(gamut_matrix m){
         m[i][i] = 1.0;
 }
 
-rgb12 rgb12_gamut(rgb12 c, const gamut_matrix m){
+rgb12 rgb12_gamut(rgb12 c, gamut_matrix m){
     rgb12 _c;
     _c.r = (uint16_t)((c.r * m[0][0]) + (c.g * m[0][1]) + (c.b * m[0][2]));
     _c.g = (uint16_t)((c.r * m[1][0]) + (c.g * m[1][1]) + (c.b * m[1][2]));

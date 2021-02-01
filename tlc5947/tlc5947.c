@@ -147,7 +147,9 @@ typedef struct _tlc5947_tlc5947_obj_t{
     const pin_obj_t* xlat;    // low -> high transition GSR shift
 
     uint8_t buffer[36];       // buffer for the led colors
-    uint8_t id_map[8];
+    uint8_t id_map[8];        // led index to id map
+    float white_m[3];         // white balance matrix
+    float gamut_m[3][3];      // gamut balance matrix
 
     struct{
         /**
@@ -845,6 +847,8 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
 STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in);
 STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in);
 STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pattern_in);
+STATIC mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t matrix_in);
+STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in);
 STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in);
 
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_blank_obj, tlc5947_tlc5947_blank);
@@ -853,17 +857,21 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_replace_obj, tlc5947_tlc5947_re
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_get_obj, tlc5947_tlc5947_get);
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_exists_obj, tlc5947_tlc5947_exists);
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_delete_obj, tlc5947_tlc5947_delete);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_white_balance_obj,tlc5947_tlc5947_set_white_balance);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_gamut_obj,tlc5947_tlc5947_set_gamut);
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_id_map_obj,tlc5947_tlc5947_set_id_map);
 
 STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
     // class methods
-    { MP_ROM_QSTR(MP_QSTR_blank),      MP_ROM_PTR(&tlc5947_tlc5947_blank_obj)      },
-    { MP_ROM_QSTR(MP_QSTR_set),        MP_ROM_PTR(&tlc5947_tlc5947_set_obj)        },
-    { MP_ROM_QSTR(MP_QSTR_replace),    MP_ROM_PTR(&tlc5947_tlc5947_replace_obj)    },
-    { MP_ROM_QSTR(MP_QSTR_get),        MP_ROM_PTR(&tlc5947_tlc5947_get_obj)        },
-    { MP_ROM_QSTR(MP_QSTR_exists),     MP_ROM_PTR(&tlc5947_tlc5947_exists_obj)     },
-    { MP_ROM_QSTR(MP_QSTR_delete),     MP_ROM_PTR(&tlc5947_tlc5947_delete_obj)     },
-    { MP_ROM_QSTR(MP_QSTR_set_id_map), MP_ROM_PTR(&tlc5947_tlc5947_set_id_map_obj) },
+    { MP_ROM_QSTR(MP_QSTR_blank),             MP_ROM_PTR(&tlc5947_tlc5947_blank_obj)             },
+    { MP_ROM_QSTR(MP_QSTR_set),               MP_ROM_PTR(&tlc5947_tlc5947_set_obj)               },
+    { MP_ROM_QSTR(MP_QSTR_replace),           MP_ROM_PTR(&tlc5947_tlc5947_replace_obj)           },
+    { MP_ROM_QSTR(MP_QSTR_get),               MP_ROM_PTR(&tlc5947_tlc5947_get_obj)               },
+    { MP_ROM_QSTR(MP_QSTR_exists),            MP_ROM_PTR(&tlc5947_tlc5947_exists_obj)            },
+    { MP_ROM_QSTR(MP_QSTR_delete),            MP_ROM_PTR(&tlc5947_tlc5947_delete_obj)            },
+    { MP_ROM_QSTR(MP_QSTR_set_white_balance), MP_ROM_PTR(&tlc5947_tlc5947_set_white_balance_obj) },
+    { MP_ROM_QSTR(MP_QSTR_set_gamut),         MP_ROM_PTR(&tlc5947_tlc5947_set_gamut_obj)         },
+    { MP_ROM_QSTR(MP_QSTR_set_id_map),        MP_ROM_PTR(&tlc5947_tlc5947_set_id_map_obj)        },
 };
 STATIC MP_DEFINE_CONST_DICT(tlc5947_tlc5947_locals_dict,tlc5947_tlc5947_locals_dict_table);
 
@@ -911,6 +919,14 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
     // setup the default id_map
     for(uint16_t i = 0; i < 8; i++)
         self->id_map[i] = i;
+
+    // setup the default white balance
+    for(uint16_t i = 0; i < 3; i++)
+        self->white_m[i] = 1.0;
+
+    // setup the default gamut
+    for(uint16_t i = 0; i < 3; i++)
+        self->gamut_m[i][i] = 1.0;
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -1210,6 +1226,62 @@ STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
     int pid = mp_obj_get_int(pid_in);
 
     return mp_obj_new_bool(delete_pattern(self, pid));
+}
+
+/**
+ * Python: tlc5947.tlc5947.set_white_balance(self, [r, g, b])
+ * @param self
+ * @param white_balance_matrix
+ */
+STATIC mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t matrix_in){
+    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    mp_obj_t *items;
+    mp_obj_get_array_fixed_n(matrix_in, 3, &items);
+
+    for(uint32_t i = 0; i < 3; ++i){
+        float f;
+        if(mp_obj_get_float_maybe(items[i], &f)){
+            self->white_m[i] = clamp(f, 0.0, 1.0);
+        }else{
+            // failed to get float
+            for(uint32_t k = 0; k < 3; k++)
+                self->white_m[k] = 1.0;
+            mp_raise_TypeError(MP_ERROR_TEXT("can't convert to float"));
+        }
+    }
+    return mp_const_none;
+}
+
+/**
+ * Python: tlc5947.tlc5947.set_gamut(self, [3x3])
+ * @param self
+ * @param gamut_matrix
+ */
+STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in){
+    tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    mp_obj_t *items;
+    mp_obj_get_array_fixed_n(matrix_in, 3, &items);
+
+    for(uint32_t i = 0; i < 3; ++i){
+        mp_obj_t *sub_items;
+        mp_obj_get_array_fixed_n(items[i], 3, &sub_items);
+
+        for(uint32_t j = 0; j < 3; ++j){
+            float f;
+            if(mp_obj_get_float_maybe(items[i], &f)){
+                self->gamut_m[i][j] = clamp(f, 0.0, 1.0);
+            }else{
+                // failed to get float
+                memset(self->gamut_m, 0, 9 * sizeof(float));
+                for(uint32_t k = 0; k < 3; k++)
+                    self->gamut_m[k][k] = 1.0;
+                mp_raise_TypeError(MP_ERROR_TEXT("can't convert to float"));
+            }
+        }
+    }
+    return mp_const_none;
 }
 
 /**

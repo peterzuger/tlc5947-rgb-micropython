@@ -290,6 +290,10 @@ static float clamp(float d, float min, float max) {
     return t > max ? max : t;
 }
 
+static rgb12 adjust_color(tlc5947_tlc5947_obj_t* self, rgb12 c){
+    return rgb12_gamut(rgb12_white_balance(c, self->white_m), self->gamut_m);
+}
+
 // returns true if the pattern is done
 static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern){
     while(true){
@@ -297,7 +301,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         switch(p->type){
         case pCOLOR:{      // change color
             tprintf("pCOLOR\n\r");
-            pattern->base_color = pattern->color = p->color.color;
+            pattern->base_color = pattern->color = adjust_color(self, p->color.color);
             pattern->brightness = 1.0F;
             self->data.changed = true;
             pattern->current++;

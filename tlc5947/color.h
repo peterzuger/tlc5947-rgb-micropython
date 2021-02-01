@@ -46,6 +46,8 @@ typedef struct{
     uint8_t b; /*< blue  [0 -> 255] */
 }rgb8;
 
+typedef float white_balance_matrix[3];
+typedef float gamut_matrix[3][3];
 
 #if defined(__cplusplus)
 extern "C"{
@@ -75,10 +77,12 @@ rgb8 rgb12torgb8(rgb12 c)__attribute__ ((const));
 
 rgb12 rgb8torgb12(rgb8 c)__attribute__ ((const));
 
-rgb12 rgb12_white_balance(rgb12 c, const float m[3]);
+void default_white_balance(white_balance_matrix m);
+rgb12 rgb12_white_balance(rgb12 c, const white_balance_matrix m);
 
-bool gamut_matrix_valid(const float m[3][3]);
-rgb12 rgb12_gamut(rgb12 c, const float m[3][3]);
+void default_gamut_matrix(gamut_matrix m);
+bool gamut_matrix_valid(const gamut_matrix m);
+rgb12 rgb12_gamut(rgb12 c, const gamut_matrix m);
 
 #if defined(__cplusplus)
 }

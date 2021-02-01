@@ -33,6 +33,7 @@
 #if defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1
 
 #include <math.h>
+#include <string.h>
 #include "color.h"
 
 #define RGB12_MAGIC1 (16.0588235) /* ((2^12)-1) / ((2^8)-1) */
@@ -119,7 +120,12 @@ rgb12 rgb8torgb12(rgb8 c){
     return _c;
 }
 
-rgb12 rgb12_white_balance(rgb12 c, const float m[3]){
+void default_white_balance(white_balance_matrix m){
+    for(uint8_t i = 0; i < 3; i++)
+        m[i] = 1.0;
+}
+
+rgb12 rgb12_white_balance(rgb12 c, const white_balance_matrix m){
     rgb12 _c;
     _c.r = (uint16_t)(c.r * m[0]);
     _c.g = (uint16_t)(c.g * m[1]);
@@ -130,14 +136,20 @@ rgb12 rgb12_white_balance(rgb12 c, const float m[3]){
 
 #define ADD_F(a, b) ((float)(((float)a)+((float)b)))
 #define ADD3_F(a, b, c) ((float)(ADD_F(ADD_F(a, b), ((float)(c)))))
-bool gamut_matrix_valid(const float m[3][3]){
+bool gamut_matrix_valid(const gamut_matrix m){
     for(uint8_t i = 0; i < 3; ++i)
         if( ADD3_F(m[i][0], m[i][1], m[i][2]) > 1.0 )
             return false;
     return true;
 }
 
-rgb12 rgb12_gamut(rgb12 c, const float m[3][3]){
+void default_gamut_matrix(gamut_matrix m){
+    memset(m, 0, sizeof(gamut_matrix));
+    for(uint8_t i = 0; i < 3; i++)
+        m[i][i] = 1.0;
+}
+
+rgb12 rgb12_gamut(rgb12 c, const gamut_matrix m){
     rgb12 _c;
     _c.r = (uint16_t)((c.r * m[0][0]) + (c.g * m[0][1]) + (c.b * m[0][2]));
     _c.g = (uint16_t)((c.r * m[1][0]) + (c.g * m[1][1]) + (c.b * m[1][2]));

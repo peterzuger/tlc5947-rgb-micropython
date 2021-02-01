@@ -148,8 +148,8 @@ typedef struct _tlc5947_tlc5947_obj_t{
 
     uint8_t buffer[36];       // buffer for the led colors
     uint8_t id_map[8];        // led index to id map
-    float white_m[3];         // white balance matrix
-    float gamut_m[3][3];      // gamut balance matrix
+    white_balance_matrix white_m; // white balance matrix
+    gamut_matrix gamut_m;         // gamut balance matrix
 
     struct{
         /**
@@ -925,12 +925,10 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
         self->id_map[i] = i;
 
     // setup the default white balance
-    for(uint16_t i = 0; i < 3; i++)
-        self->white_m[i] = 1.0;
+    default_white_balance(self->white_m);
 
     // setup the default gamut
-    for(uint16_t i = 0; i < 3; i++)
-        self->gamut_m[i][i] = 1.0;
+    default_gamut_matrix(self->gamut_m);
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -1249,8 +1247,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t mat
             self->white_m[i] = clamp(f, 0.0, 1.0);
         }else{
             // failed to get float
-            for(uint32_t k = 0; k < 3; k++)
-                self->white_m[k] = 1.0;
+            default_white_balance(self->white_m);
             mp_raise_TypeError(MP_ERROR_TEXT("can't convert to float"));
         }
     }
@@ -1278,18 +1275,14 @@ STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in){
                 self->gamut_m[i][j] = clamp(f, 0.0, 1.0);
             }else{
                 // failed to get float
-                memset(self->gamut_m, 0, 9 * sizeof(float));
-                for(uint32_t k = 0; k < 3; k++)
-                    self->gamut_m[k][k] = 1.0;
+                default_gamut_matrix(self->gamut_m);
                 mp_raise_TypeError(MP_ERROR_TEXT("can't convert to float"));
             }
         }
     }
 
     if(!gamut_matrix_valid(self->gamut_m)){
-        memset(self->gamut_m, 0, 9 * sizeof(float));
-        for(uint32_t k = 0; k < 3; k++)
-            self->gamut_m[k][k] = 1.0;
+        default_gamut_matrix(self->gamut_m);
         mp_raise_ValueError(MP_ERROR_TEXT("invalid matrix"));
     }
 

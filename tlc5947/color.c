@@ -119,5 +119,21 @@ rgb12 rgb8torgb12(rgb8 c){
     return _c;
 }
 
+rgb12 rgb12_white_balance(rgb12 c, float m[3]){
+    rgb12 _c;
+    _c.r = (uint16_t)(c.r * m[0]);
+    _c.g = (uint16_t)(c.g * m[1]);
+    _c.b = (uint16_t)(c.b * m[2]);
+    return _c;
+}
+
+rgb12 rgb12_gamut(rgb12 c, float m[3][3]){
+    rgb12 _c;
+    _c.r = (uint16_t)((c.r * m[0][0]) + (c.g * m[0][1]) + (c.b * m[0][2]));
+    _c.g = (uint16_t)((c.r * m[1][0]) + (c.g * m[1][1]) + (c.b * m[1][2]));
+    _c.b = (uint16_t)((c.r * m[2][0]) + (c.g * m[2][1]) + (c.b * m[2][2]));
+    return _c;
+}
+
 
 #endif /* defined(MODULE_TLC5947_ENABLED) && MODULE_TLC5947_ENABLED == 1 */

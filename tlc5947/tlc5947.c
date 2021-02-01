@@ -602,9 +602,6 @@ static bool check_balanced_jumps(const char* s){
 
 static inline int isdigit(int c){return ((c>='0')&&(c<='9'));}
 static inline int isxdigit(int c){return (isdigit(c) || ((c>='A')&&(c<='F')) || ((c>='a')&&(c<='f')));}
-static inline __attribute__((pure)) char gethex(uint8_t i){
-    return "0123456789ABCDEF"[i];
-}
 
 /**
  * This function checks that all colors used
@@ -1174,14 +1171,9 @@ STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     rgb8 c = rgb12torgb8(get_buffer(self->buffer, led));
 
     char* str = m_malloc(8);
-    str[0] = '#';
-    str[1] = gethex((c.r&0xF0)>>4);
-    str[2] = gethex( c.r&0x0F);
-    str[3] = gethex((c.g&0xF0)>>4);
-    str[4] = gethex( c.g&0x0F);
-    str[5] = gethex((c.b&0xF0)>>4);
-    str[6] = gethex( c.b&0x0F);
-    str[7] = 0;
+
+    put_rgb8(str, c);
+
     return mp_obj_new_str(str, 7);
 }
 

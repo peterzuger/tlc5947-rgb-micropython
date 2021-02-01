@@ -63,6 +63,14 @@ extern "C"{
 rgb12 get_rgb12(const char* s);
 rgb8 get_rgb8(const char* s);
 
+/**
+ * writes a string in the format to s:
+ *     "#RRGGBB\0"
+ * appends the terminating 0 character.
+ * returns s + 7
+ */
+const char* put_rgb8(char* s, rgb8 c);
+
 rgb8 rgb12torgb8(rgb12 c)__attribute__ ((const));
 
 rgb12 rgb8torgb12(rgb8 c)__attribute__ ((const));

@@ -47,6 +47,7 @@
  */
 static int islower(int c){return ((c>='a')&&(c<='z'));}
 static int toupper(int c){return islower(c)?(c-32):c;}
+static char get_hex(uint8_t i){return "0123456789ABCDEF"[i];}
 
 static uint8_t get_byte(const char* s){
     uint8_t i;
@@ -55,6 +56,10 @@ static uint8_t get_byte(const char* s){
     return i;
 }
 
+static void put_byte(char* s, uint8_t b){
+    s[0] = get_hex((b & 0xF0) >> 4);
+    s[1] = get_hex((b & 0x0F)     );
+}
 
 rgb12 get_rgb12(const char* s){
     return rgb8torgb12(get_rgb8(s));
@@ -69,6 +74,14 @@ rgb8 get_rgb8(const char* s){
     return c;
 }
 
+const char* put_rgb8(char* s, rgb8 c){
+    s[0] = '#';
+    put_byte(s + 1, c.r);
+    put_byte(s + 3, c.g);
+    put_byte(s + 5, c.b);
+    s[7] = 0;
+    return s + 7;
+}
 
 rgb8 rgb12torgb8(rgb12 c){
     rgb8 _c;

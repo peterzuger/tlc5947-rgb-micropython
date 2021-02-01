@@ -1285,6 +1285,14 @@ STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in){
             }
         }
     }
+
+    if(!gamut_matrix_valid(self->gamut_m)){
+        memset(self->gamut_m, 0, 9 * sizeof(float));
+        for(uint32_t k = 0; k < 3; k++)
+            self->gamut_m[k][k] = 1.0;
+        mp_raise_ValueError(MP_ERROR_TEXT("invalid matrix"));
+    }
+
     return mp_const_none;
 }
 

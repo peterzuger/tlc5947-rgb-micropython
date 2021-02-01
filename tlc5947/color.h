@@ -32,6 +32,7 @@
 #define TLC5947_COLOR_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct{
     uint16_t r:12; /*< red   [0 -> 4095] */
@@ -74,9 +75,10 @@ rgb8 rgb12torgb8(rgb12 c)__attribute__ ((const));
 
 rgb12 rgb8torgb12(rgb8 c)__attribute__ ((const));
 
-rgb12 rgb12_white_balance(rgb12 c, float m[3]);
+rgb12 rgb12_white_balance(rgb12 c, const float m[3]);
 
-rgb12 rgb12_gamut(rgb12 c, float m[3][3]);
+bool gamut_matrix_valid(const float m[3][3]);
+rgb12 rgb12_gamut(rgb12 c, const float m[3][3]);
 
 #if defined(__cplusplus)
 }

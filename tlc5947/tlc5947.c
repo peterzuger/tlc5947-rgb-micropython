@@ -194,7 +194,7 @@ typedef struct _tlc5947_tlc5947_obj_t{
         void * ptr;                                     \
         printf("m_malloc: %d", (unsigned int)size);     \
         ptr = m_malloc(size);                           \
-        printf(", 0x%08x\n\r", (unsigned int)ptr);      \
+        printf(", 0x%08x\r\n", (unsigned int)ptr);      \
         ptr;                                            \
     })
 
@@ -202,7 +202,7 @@ typedef struct _tlc5947_tlc5947_obj_t{
     ({                                                  \
         void * ptr;                                     \
         ptr = m_malloc_maybe(size);                     \
-        printf("m_malloc: %d, 0x%08x\n\r",              \
+        printf("m_malloc: %d, 0x%08x\r\n",              \
                (unsigned int)size, (unsigned int)ptr);  \
         ptr;                                            \
     })
@@ -211,7 +211,7 @@ typedef struct _tlc5947_tlc5947_obj_t{
     ({                                                          \
         void * n_ptr;                                           \
         n_ptr = m_realloc_maybe(ptr, size, move);               \
-        printf("m_realloc_maybe: 0x%08x, %d, %s, 0x%08x\n\r",   \
+        printf("m_realloc_maybe: 0x%08x, %d, %s, 0x%08x\r\n",   \
                (unsigned int)ptr, (unsigned int)size,           \
                move ? "true" : "false", (unsigned int)n_ptr);   \
         n_ptr;                                                  \
@@ -219,7 +219,7 @@ typedef struct _tlc5947_tlc5947_obj_t{
 
 #define m_free(ptr)                                             \
     ({                                                          \
-        printf("m_free: 0x%08x\n\r", (unsigned int)ptr);        \
+        printf("m_free: 0x%08x\r\n", (unsigned int)ptr);        \
         m_free(ptr);                                            \
     })
 
@@ -234,12 +234,12 @@ typedef struct _tlc5947_tlc5947_obj_t{
 
 static void dump_pattern(pattern_base_t* pattern){
     dprintf("\033[31m");
-    dprintf("pattern dump:\n\r"
-            "color: R: %02x G: %02x B: %02x\n\r"
-            "current: %d\n\r"
-            "id: %d\n\r"
-            "len: %d\n\r"
-            "stack.pos: %d\n\r",
+    dprintf("pattern dump:\r\n"
+            "color: R: %02x G: %02x B: %02x\r\n"
+            "current: %d\r\n"
+            "id: %d\r\n"
+            "len: %d\r\n"
+            "stack.pos: %d\r\n",
             pattern->color.r,pattern->color.g,pattern->color.b,
             (unsigned int)pattern->current,
             pattern->id,
@@ -249,31 +249,31 @@ static void dump_pattern(pattern_base_t* pattern){
 
     for(uint16_t i = 0; i < pattern->len; i++){
         switch(pattern->tokens[i].type){
-        case pCOLOR:      {dprintf("pCOLOR\n\r");     break;}
+        case pCOLOR:      {dprintf("pCOLOR\r\n");     break;}
         case pTRANSPARENT:{dprintf("pTRANSPARENT");   break;}
-        case pSLEEP:      {dprintf("pSLEEP\n\r");     break;}
-        case pBRIGHTNESS: {dprintf("pBRIGHTNESS\n\r");break;}
-        case pINCREMENT:  {dprintf("pINCREMENT\n\r"); break;}
-        case pDECREMENT:  {dprintf("pDECREMENT\n\r"); break;}
-        case pFOREVER:    {dprintf("pFOREVER\n\r");   break;}
-        case pJUMP_NZERO: {dprintf("pJNZ\n\r");       break;}
-        case pMARK:       {dprintf("pMARK\n\r");      break;}
-        case pPUSH:       {dprintf("pPUSH\n\r");      break;}
-        case pPOP:        {dprintf("pPOP\n\r");       break;}
-        default:          {dprintf("pDEFAULT\n\r");   break;}
+        case pSLEEP:      {dprintf("pSLEEP\r\n");     break;}
+        case pBRIGHTNESS: {dprintf("pBRIGHTNESS\r\n");break;}
+        case pINCREMENT:  {dprintf("pINCREMENT\r\n"); break;}
+        case pDECREMENT:  {dprintf("pDECREMENT\r\n"); break;}
+        case pFOREVER:    {dprintf("pFOREVER\r\n");   break;}
+        case pJUMP_NZERO: {dprintf("pJNZ\r\n");       break;}
+        case pMARK:       {dprintf("pMARK\r\n");      break;}
+        case pPUSH:       {dprintf("pPUSH\r\n");      break;}
+        case pPOP:        {dprintf("pPOP\r\n");       break;}
+        default:          {dprintf("pDEFAULT\r\n");   break;}
         }
     }
     dprintf("\033[0m");
 }
 
 static void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
-    dprintf("dump_pattern_map:\n\r");
+    dprintf("dump_pattern_map:\r\n");
     for(size_t i = 0; i < 8; i++){
         dprintf("led %d, len = %d:", (unsigned)i, self->data.pattern_map[i].len);
         for(size_t j = 0; j < self->data.pattern_map[i].len; j++){
             dprintf(" %d", self->data.pattern_map[i].map[j]);
         }
-        dprintf("\n\r");
+        dprintf("\r\n");
     }
 }
 
@@ -299,7 +299,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         token_t* p = &pattern->tokens[pattern->current];
         switch(p->type){
         case pCOLOR:{      // change color
-            tprintf("pCOLOR\n\r");
+            tprintf("pCOLOR\r\n");
             pattern->base_color = pattern->color = adjust_color(self, p->color.color);
             pattern->brightness = 1.0F;
             self->data.changed = true;
@@ -310,7 +310,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pTRANSPARENT:{
-            tprintf("pTRANSPARENT\n\r");
+            tprintf("pTRANSPARENT\r\n");
             pattern->visible = !pattern->visible;
             self->data.changed = true;
             pattern->current++;
@@ -320,7 +320,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pSLEEP:{      // sleep for x amount of ticks
-            tprintf("pSLEEP\n\r");
+            tprintf("pSLEEP\r\n");
             if(!p->sleep.remaining){
                 p->sleep.remaining = p->sleep.sleep_time;
             }else{
@@ -336,7 +336,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pBRIGHTNESS:{ // change overall brightness
-            tprintf("pBRIGHTNESS\n\r");
+            tprintf("pBRIGHTNESS\r\n");
             self->data.changed = true;
 
             pattern->brightness = clamp(pattern->brightness + p->brighness.brightness, 0.0F, 1.0F);
@@ -352,7 +352,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pINCREMENT:{  // increment current stack value
-            tprintf("pINCREMENT\n\r");
+            tprintf("pINCREMENT\r\n");
             pattern->stack.stack[pattern->stack.pos]++;
             pattern->current++;
             if(pattern->current == pattern->len)
@@ -361,7 +361,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pDECREMENT:{  // decrement current stack value
-            tprintf("pDECREMENT\n\r");
+            tprintf("pDECREMENT\r\n");
             pattern->stack.stack[pattern->stack.pos]--;
             pattern->current++;
             if(pattern->current == pattern->len)
@@ -370,12 +370,12 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pFOREVER:{  // stay here for ever
-            tprintf("pFOREVER\n\r");
+            tprintf("pFOREVER\r\n");
             return false;
         }
 
         case pJUMP_NZERO:{ // jump to the matching marker if stack value is not 0
-            tprintf("pJNZ\n\r");
+            tprintf("pJNZ\r\n");
             if(pattern->stack.stack[pattern->stack.pos]){
                 pattern->current = p->jump.new_pp;
                 return false;
@@ -388,13 +388,13 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pMARK:{       // Marker for jump
-            tprintf("pMARK\n\r");
+            tprintf("pMARK\r\n");
             pattern->current++;
             continue;
         }
 
         case pPUSH:{       // Push value onto the stack
-            tprintf("pPUSH\n\r");
+            tprintf("pPUSH\r\n");
             pattern->stack.pos++;
             if(pattern->stack.pos == MAX_STACK) // stack overflow
                 return true;
@@ -404,7 +404,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         case pPOP:{         // Pop value from the stack
-            tprintf("pPOP\n\r");
+            tprintf("pPOP\r\n");
             if(!pattern->stack.pos) // stack underflow
                 return true;
             pattern->stack.pos--;
@@ -413,7 +413,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
         }
 
         default:
-            tprintf("pDEFAULT --- ERROR\n\r");
+            tprintf("pDEFAULT --- ERROR\r\n");
             dump_pattern(pattern);
             return true;
         }
@@ -425,7 +425,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
  * all references to it in the pattern_map
  */
 static bool delete_pattern(tlc5947_tlc5947_obj_t* self, uint16_t pid){
-    dprintf("delete_pattern(%d)\n\r", pid);
+    dprintf("delete_pattern(%d)\r\n", pid);
 
     self->data.changed = true;
 
@@ -729,23 +729,23 @@ static float atof(const char *s){
 
 static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
     size_t i = 0;
-    dprintf("parse start:\n\r");
+    dprintf("parse start:\r\n");
     while(*s && (len > i)){
         switch(*s++){
         case '#':
-            dprintf("RGB COLOR\n\r");
+            dprintf("RGB COLOR\r\n");
             pat[i].type = pCOLOR;
             pat[i].color.color = get_rgb12(--s);
             s += 7;
             break;
 
         case '@':
-            dprintf("TRANSPARENT\n\r");
+            dprintf("TRANSPARENT\r\n");
             pat[i].type = pTRANSPARENT;
             break;
 
         case '\b':{
-            dprintf("BRIGHTNESS\n\r");
+            dprintf("BRIGHTNESS\r\n");
             pat[i].type = pBRIGHTNESS;
             int len = 0;
             if(*s == '-')
@@ -758,7 +758,7 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
         }
 
         case '|':{
-            dprintf("SLEEP\n\r");
+            dprintf("SLEEP\r\n");
             pat[i].type = pSLEEP;
             int len = 0;
             while(isdigit(s[len]))
@@ -776,17 +776,17 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
                 len++;
             pat[i].push.value = atoi(s);
             s += len;
-            dprintf("PUSH %d\n\r", (int)pat[i].push.value);
+            dprintf("PUSH %d\r\n", (int)pat[i].push.value);
             break;
         }
 
         case '>':
-            dprintf("POP\n\r");
+            dprintf("POP\r\n");
             pat[i].type = pPOP;
             break;
 
         case '[':
-            dprintf("MARK\n\r");
+            dprintf("MARK\r\n");
             pat[i].type = pMARK;
             break;
 
@@ -810,32 +810,32 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
                     break;
                 }
             }
-            dprintf("JNZ %d\n\r", (int)pat[i].jump.new_pp);
+            dprintf("JNZ %d\r\n", (int)pat[i].jump.new_pp);
             break;
         }
 
         case '+':
-            dprintf("INCREMENT\n\r");
+            dprintf("INCREMENT\r\n");
             pat[i].type = pINCREMENT;
             break;
 
         case '-':
-            dprintf("DECREMENT\n\r");
+            dprintf("DECREMENT\r\n");
             pat[i].type = pDECREMENT;
             break;
 
         case ';':
-            dprintf("LOOP FOREVER\n\r");
+            dprintf("LOOP FOREVER\r\n");
             pat[i].type = pFOREVER;
             return; // we are done
 
         default:
-            printf("\n\r !!! parsing error !!! \n\r");
+            printf("\r\n !!! parsing error !!! \r\n");
             break;
         }
         i++;
     }
-    dprintf("parse done\n\r");
+    dprintf("parse done\r\n");
 }
 
 

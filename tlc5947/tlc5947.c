@@ -192,10 +192,9 @@ typedef struct _tlc5947_tlc5947_obj_t{
 #define m_malloc(size)                                  \
     ({                                                  \
         void * ptr;                                     \
-        printf("m_malloc: %d\n\r", (unsigned int)size); \
+        printf("m_malloc: %d", (unsigned int)size);     \
         ptr = m_malloc(size);                           \
-        printf("m_malloc: %d, 0x%08x\n\r",              \
-               (unsigned int)size, (unsigned int)ptr);  \
+        printf(", 0x%08x\n\r", (unsigned int)ptr);      \
         ptr;                                            \
     })
 

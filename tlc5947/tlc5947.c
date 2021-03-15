@@ -284,6 +284,11 @@ static void dump_pattern_map(tlc5947_tlc5947_obj_t* self){
 #endif
 
 
+static const token_t fixed_forever_token = {
+    .type = pFOREVER
+};
+
+
 static float clamp(float d, float min, float max) {
     const float t = d < min ? min : d;
     return t > max ? max : t;
@@ -371,6 +376,12 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
 
         case pFOREVER:{  // stay here for ever
             tprintf("pFOREVER\r\n");
+            if(pattern->tokens != &fixed_forever_token){
+                m_free(pattern->tokens);
+                pattern->tokens = (token_t*)&fixed_forever_token;
+                pattern->len = 1;
+                pattern->current = 0;
+            }
             return false;
         }
 
@@ -464,7 +475,8 @@ static bool delete_pattern(tlc5947_tlc5947_obj_t* self, uint16_t pid){
             LOCK(self);
 
             // deallocate the token list
-            m_free(self->data.patterns.list[i].tokens);
+            if(self->data.patterns.list[i].tokens != &fixed_forever_token)
+                m_free(self->data.patterns.list[i].tokens);
             self->data.patterns.list[i].tokens = NULL;
 
             self->data.patterns.len--;
@@ -1160,7 +1172,8 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
 
     LOCK(self);
 
-    m_free(self->data.patterns.list[pos].tokens);
+    if(self->data.patterns.list[pos].tokens != &fixed_forever_token)
+        m_free(self->data.patterns.list[pos].tokens);
     memset(&self->data.patterns.list[pos], 0, sizeof(pattern_base_t));
 
     self->data.patterns.list[pos].tokens  = new_tokens;

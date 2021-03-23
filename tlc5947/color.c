@@ -120,6 +120,45 @@ rgb12 rgb8torgb12(rgb8 c){
     return _c;
 }
 
+static const uint16_t logLUT[2][12] = { {
+        0,  353, 1109, 1990, 2614, 3495, 4120, 5000, 5775, 6990, 8495, 10000},
+      { 0, 1500, 4000, 6000, 7000, 8000, 8500, 9000, 9300, 9600, 9800, 10000 }
+};
+
+static float log_brightness(float f_linval){
+    uint8_t i;
+    uint16_t ipf;
+    uint16_t linval = (uint16_t)(f_linval * ((float)10000));
+
+    if(linval >= logLUT[1][11]){
+        ipf = logLUT[0][11];
+    }else{
+        for(i = 0; i < 11; i++){
+            if(linval < logLUT[1][i]){
+                break;
+            }
+        }
+
+        ipf = (linval - logLUT[1][i - 1]) * 10 / (logLUT[1][i] - logLUT[1][i - 1]);
+        ipf = logLUT[0][i - 1] + (logLUT[0][i] - logLUT[0][i - 1]) * ipf / 10;
+    }
+
+    return (float)(((float)ipf) / ((float)10000));
+}
+
+
+rgb12 rgb12_brightness(rgb12 c, float brightness){
+    rgb12 _c;
+
+    float b = log_brightness(brightness);
+
+    _c.r = (uint16_t)((float)c.r * b);
+    _c.g = (uint16_t)((float)c.g * b);
+    _c.b = (uint16_t)((float)c.b * b);
+
+    return _c;
+}
+
 void default_white_balance(white_balance_matrix m){
     for(uint8_t i = 0; i < 3; i++)
         m[i] = 1.0;

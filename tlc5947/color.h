@@ -77,6 +77,8 @@ rgb8 rgb12torgb8(rgb12 c)__attribute__ ((const));
 
 rgb12 rgb8torgb12(rgb8 c)__attribute__ ((const));
 
+rgb12 rgb12_brightness(rgb12 c, float brightness);
+
 void default_white_balance(white_balance_matrix m);
 rgb12 rgb12_white_balance(rgb12 c, white_balance_matrix m);
 

@@ -346,9 +346,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
 
             pattern->brightness = clamp(pattern->brightness + p->brighness.brightness, 0.0F, 1.0F);
 
-            pattern->color.r = (uint16_t)((float)pattern->base_color.r * pattern->brightness);
-            pattern->color.g = (uint16_t)((float)pattern->base_color.g * pattern->brightness);
-            pattern->color.b = (uint16_t)((float)pattern->base_color.b * pattern->brightness);
+            pattern->color = rgb12_brightness(pattern->base_color, pattern->brightness);
 
             pattern->current++;
             if(pattern->current == pattern->len)

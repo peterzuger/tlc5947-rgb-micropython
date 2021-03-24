@@ -754,9 +754,8 @@ static float atof(const char *s){
 }
 
 static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
-    size_t i = 0;
     dprintf("parse start:\r\n");
-    while(*s && (len > i)){
+    for(size_t i = 0; *s && (len > i); i++){
         switch(*s++){
         case '#':
             dprintf("RGB COLOR\r\n");
@@ -864,7 +863,6 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             mp_raise_ValueError(MP_ERROR_TEXT("Unknown character in pattern string."));
             break;
         }
-        i++;
     }
     dprintf("parse done\r\n");
 }

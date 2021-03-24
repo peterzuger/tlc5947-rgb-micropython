@@ -668,6 +668,10 @@ static size_t get_pattern_length(const char* s){
             len++;
             break;
 
+            // ignore spaces
+        case ' ':
+            break;
+
         default:
             return 0;
         }
@@ -838,6 +842,10 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             dprintf("LOOP FOREVER\r\n");
             pat[i].type = pFOREVER;
             return; // we are done
+
+        case ' ':
+            // ignore spaces
+            break;
 
         default:
             printf("\r\n !!! parsing error !!! \r\n");

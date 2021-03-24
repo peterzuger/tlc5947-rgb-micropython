@@ -673,10 +673,22 @@ static size_t get_pattern_length(const char* s){
             break;
 
         default:
-            return 0;
+            mp_raise_ValueError(MP_ERROR_TEXT("Unknown character in pattern string."));
         }
     }
+    if(!len)
+        mp_raise_ValueError(MP_ERROR_TEXT("Zero length pattern string"));
     return len;
+}
+
+static void check_pattern_string(const char* pattern_str){
+    if(!check_balanced_jumps(pattern_str)){
+        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("unbalanced jumps"));
+    }
+
+    if(!check_colors(pattern_str)){
+        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("invalid color Format"));
+    }
 }
 
 static int atoi(const char *p) {
@@ -848,7 +860,8 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             break;
 
         default:
-            printf("\r\n !!! parsing error !!! \r\n");
+            // should have been catched by get_pattern_length ?
+            mp_raise_ValueError(MP_ERROR_TEXT("Unknown character in pattern string."));
             break;
         }
         i++;
@@ -1003,18 +1016,9 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     // lex the current pattern, and add it to the pattern_list
     const char* pattern_str = mp_obj_str_get_str(pattern_in);
 
-    if(!check_balanced_jumps(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("unbalanced jumps"));
-    }
-
-    if(!check_colors(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("invalid color Format"));
-    }
+    check_pattern_string(pattern_str);
 
     size_t pl = get_pattern_length(pattern_str);
-    if(!pl){
-        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Pattern"));
-    }
 
     /**
      * Lock the tlc5947_object, because if realloc succeds the original pattern list becomes invalid
@@ -1143,18 +1147,9 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
 
     const char* pattern_str = mp_obj_str_get_str(pattern_in);
 
-    if(!check_balanced_jumps(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("unbalanced jumps"));
-    }
-
-    if(!check_colors(pattern_str)){
-        mp_raise_msg(&mp_type_AttributeError, MP_ERROR_TEXT("invalid color Format"));
-    }
+    check_pattern_string(pattern_str);
 
     size_t pl = get_pattern_length(pattern_str);
-    if(!pl){
-        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Pattern"));
-    }
 
     int pid = mp_obj_get_int(pid_in);
 

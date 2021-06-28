@@ -36,8 +36,8 @@
 #include <string.h>
 #include "color.h"
 
-#define RGB12_MAGIC1 (16.0588235) /* ((2^12)-1) / ((2^8)-1) */
-#define RGB12_MAGIC2 (16.0588236) /*  */
+#define RGB12_MAGIC1 (16.0588235F) /* ((2^12)-1) / ((2^8)-1) */
+#define RGB12_MAGIC2 (16.0588236F) /*  */
 
 /**
  * these functions should be provided by libc <ctype.h>
@@ -161,7 +161,7 @@ rgb12 rgb12_brightness(rgb12 c, float brightness){
 
 void default_white_balance(white_balance_matrix m){
     for(uint8_t i = 0; i < 3; i++)
-        m[i] = 1.0;
+        m[i] = 1.0F;
 }
 
 rgb12 rgb12_white_balance(rgb12 c, white_balance_matrix m){
@@ -177,7 +177,7 @@ rgb12 rgb12_white_balance(rgb12 c, white_balance_matrix m){
 #define ADD3_F(a, b, c) ((float)(ADD_F(ADD_F(a, b), ((float)(c)))))
 bool gamut_matrix_valid(gamut_matrix m){
     for(uint8_t i = 0; i < 3; ++i)
-        if( ADD3_F(m[i][0], m[i][1], m[i][2]) > 1.0 )
+        if( ADD3_F(m[i][0], m[i][1], m[i][2]) > 1.0F )
             return false;
     return true;
 }
@@ -185,7 +185,7 @@ bool gamut_matrix_valid(gamut_matrix m){
 void default_gamut_matrix(gamut_matrix m){
     memset(m, 0, sizeof(gamut_matrix));
     for(uint8_t i = 0; i < 3; i++)
-        m[i][i] = 1.0;
+        m[i][i] = 1.0F;
 }
 
 rgb12 rgb12_gamut(rgb12 c, gamut_matrix m){

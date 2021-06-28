@@ -1255,7 +1255,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t mat
     for(uint32_t i = 0; i < 3; ++i){
         float f;
         if(mp_obj_get_float_maybe(items[i], &f)){
-            self->white_m[i] = clamp(f, 0.0, 1.0);
+            self->white_m[i] = clamp(f, 0.0F, 1.0F);
         }else{
             // failed to get float
             default_white_balance(self->white_m);
@@ -1283,7 +1283,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in){
         for(uint32_t j = 0; j < 3; ++j){
             float f;
             if(mp_obj_get_float_maybe(items[i], &f)){
-                self->gamut_m[i][j] = clamp(f, 0.0, 1.0);
+                self->gamut_m[i][j] = clamp(f, 0.0F, 1.0F);
             }else{
                 // failed to get float
                 default_gamut_matrix(self->gamut_m);

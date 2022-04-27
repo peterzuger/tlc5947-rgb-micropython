@@ -647,7 +647,9 @@ static size_t get_pattern_length(const char* s){
             break;
 
         case '\b':
-            while(isdigit(*s) || (*s == '.') || (*s == '-'))
+            if(*s == '-')
+                s++;
+            while(isdigit(*s) || (*s == '.'))
                 s++;
             len++;
             break;

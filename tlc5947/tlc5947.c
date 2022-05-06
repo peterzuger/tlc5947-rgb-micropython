@@ -93,7 +93,7 @@ typedef enum{
 /**
  * This data structure contains all the tokens of the led language.
  * The first element of this type is the enum from above,
- * this is to identify wich token this instance refers to
+ * this is to identify which token this instance refers to
  *
  * Then follows a single union, containing an element for every
  * possible value of the enum, even if they are empty.
@@ -109,7 +109,7 @@ typedef struct _token_t{
         struct{rgb12 color;                            }color;
         struct{                                        }transparent;
         struct{uint32_t sleep_time; uint32_t remaining;}sleep;
-        struct{float brightness;                       }brighness;
+        struct{float brightness;                       }brightness;
         struct{                                        }increment;
         struct{                                        }decrement;
         struct{                                        }forever;
@@ -133,7 +133,7 @@ typedef struct _pattern_base_t{
     }stack;
     float brightness;    // brightness from 0 -> 1
     rgb12 base_color;    // the original color value
-    rgb12 color;         // the led setting algorythm used this color,
+    rgb12 color;         // the led setting algorithm used this color,
                          // it is pre calculated every tick
     bool visible;
 }pattern_base_t;
@@ -344,7 +344,7 @@ static bool pattern_do_tick(tlc5947_tlc5947_obj_t* self, pattern_base_t* pattern
             tprintf("pBRIGHTNESS\r\n");
             self->data.changed = true;
 
-            pattern->brightness = clamp(pattern->brightness + p->brighness.brightness, 0.0F, 1.0F);
+            pattern->brightness = clamp(pattern->brightness + p->brightness.brightness, 0.0F, 1.0F);
 
             pattern->color = rgb12_brightness(pattern->base_color, pattern->brightness);
 
@@ -779,7 +779,7 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
                 len++;
             while(isdigit(s[len]) || (s[len] == '.'))
                 len++;
-            pat[i].brighness.brightness = atof(s);
+            pat[i].brightness.brightness = atof(s);
             s += len;
             break;
         }
@@ -861,7 +861,7 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
             break;
 
         default:
-            // should have been catched by get_pattern_length ?
+            // should have been caught by get_pattern_length ?
             mp_raise_ValueError(MP_ERROR_TEXT("Unknown character in pattern string."));
             break;
         }
@@ -970,7 +970,7 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
 STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
                                   mp_obj_t self_in,mp_print_kind_t kind){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    mp_printf(print, "tlc5947(xlat=%d:%d, blank=%d:%d, lenght=%d)",
+    mp_printf(print, "tlc5947(xlat=%d:%d, blank=%d:%d, length=%d)",
               self->xlat->port, self->xlat->pin, self->blank->port, self->blank->pin);
 }
 
@@ -1021,7 +1021,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
     size_t pl = get_pattern_length(pattern_str);
 
     /**
-     * Lock the tlc5947_object, because if realloc succeds the original pattern list becomes invalid
+     * Lock the tlc5947_object, because if realloc succeeds the original pattern list becomes invalid
      * this makes sure the pattern list is not used by __call__
      */
     LOCK(self);

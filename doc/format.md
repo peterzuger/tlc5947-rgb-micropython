@@ -87,7 +87,7 @@ tlc.set(1, "#FF0000|50#00FF00;")
 This token changes the brightness of the color currently in use to by
 the specified amount n. This change is done to the color in the HSV
 spectrum. This means the color is converted to HSV and the given value
-(wich can be positive or negative) is added to the Value portion of
+(which can be positive or negative) is added to the Value portion of
 the HSV color. With a negative value, the brightness can be decreased.
 
 The value has to be within the range -1 <= value <= 1, if the value
@@ -105,7 +105,7 @@ tlc.set(1, "#FF0000|50\b-0.5;")
 
 ## <<n>               push n onto the stack
 Each pattern, in its own data, has a stack it is a fixed 10 element
-array. This token can be used to push a value onto this stack. Wich
+array. This token can be used to push a value onto this stack. Which
 means incrementing the stack pointer and setting the top of the stack
 to the specified value.
 

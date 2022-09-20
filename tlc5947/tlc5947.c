@@ -37,8 +37,8 @@
 
 #include "py/obj.h"
 #include "py/runtime.h"
-#include "spi.h"
 #include "py/mphal.h"
+#include "extmod/machine_spi.h"
 
 #include "color.h"
 
@@ -142,7 +142,7 @@ typedef struct _tlc5947_tlc5947_obj_t{
     // base represents some basic information, like type
     mp_obj_base_t base;
 
-    const spi_t*     spi;     // spi peripheral to use
+    mp_obj_base_t*   spi;     // spi peripheral to use
     mp_hal_pin_obj_t blank;   // blank high -> all outputs off
     mp_hal_pin_obj_t xlat;    // low -> high transition GSR shift
 
@@ -937,7 +937,7 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
 
     self->base.type = &tlc5947_tlc5947_type;
 
-    self->spi   = spi_from_mp_obj(args[0]);
+    self->spi   = mp_hal_get_spi_obj(args[0]);
     self->xlat  = mp_hal_get_pin_obj(args[1]);
     self->blank = mp_hal_get_pin_obj(args[2]);
 
@@ -978,7 +978,7 @@ STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* con
     if(IS_UNLOCKED(self)){
         if(do_tick(self)){
             mp_hal_pin_low(self->xlat);
-            spi_transfer(self->spi, 36, self->buffer, NULL, 100);
+            ((mp_machine_spi_p_t *)MP_OBJ_TYPE_GET_SLOT(self->spi->type, protocol))->transfer(self->spi, 36, self->buffer, NULL);
             mp_hal_pin_high(self->xlat);
             self->data.changed = false;
         }

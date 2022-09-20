@@ -37,8 +37,8 @@
 
 #include "py/obj.h"
 #include "py/runtime.h"
-#include "pin.h"
 #include "spi.h"
+#include "py/mphal.h"
 
 #include "color.h"
 
@@ -143,8 +143,8 @@ typedef struct _tlc5947_tlc5947_obj_t{
     mp_obj_base_t base;
 
     const spi_t*     spi;     // spi peripheral to use
-    const pin_obj_t* blank;   // blank high -> all outputs off
-    const pin_obj_t* xlat;    // low -> high transition GSR shift
+    mp_hal_pin_obj_t blank;   // blank high -> all outputs off
+    mp_hal_pin_obj_t xlat;    // low -> high transition GSR shift
 
     uint8_t buffer[36];       // buffer for the led colors
     uint8_t id_map[8];        // led index to id map
@@ -938,8 +938,8 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
     self->base.type = &tlc5947_tlc5947_type;
 
     self->spi   = spi_from_mp_obj(args[0]);
-    self->xlat  = pin_find(args[1]);
-    self->blank = pin_find(args[2]);
+    self->xlat  = mp_hal_get_pin_obj(args[1]);
+    self->blank = mp_hal_get_pin_obj(args[2]);
 
     memset(self->buffer, 0, 36);
     memset(&self->data, 0, sizeof(self->data));
@@ -965,8 +965,8 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
 STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
                                   mp_obj_t self_in,mp_print_kind_t kind){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    mp_printf(print, "tlc5947(xlat=%d:%d, blank=%d:%d, length=%d)",
-              self->xlat->port, self->xlat->pin, self->blank->port, self->blank->pin);
+    mp_printf(print, "tlc5947(xlat=" MP_HAL_PIN_FMT ", blank=" MP_HAL_PIN_FMT ", length=%d)",
+              self->xlat, self->blank);
 }
 
 /**

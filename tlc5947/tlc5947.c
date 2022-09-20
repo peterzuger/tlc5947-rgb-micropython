@@ -910,20 +910,15 @@ STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
 STATIC MP_DEFINE_CONST_DICT(tlc5947_tlc5947_locals_dict,tlc5947_tlc5947_locals_dict_table);
 
 
-const mp_obj_type_t tlc5947_tlc5947_type = {
-    // "inherit" the type "type"
-    { &mp_type_type },
-    // give it a name
-    .name = MP_QSTR_tlc5947,
-    // give it a print-function
-    .print = tlc5947_tlc5947_print,
-    // give it a constructor
-    .make_new = tlc5947_tlc5947_make_new,
-    // give it a call object
-    .call = tlc5947_tlc5947_call,
-    // and the global members
-    .locals_dict = (mp_obj_dict_t*)&tlc5947_tlc5947_locals_dict,
-};
+MP_DEFINE_CONST_OBJ_TYPE(
+    tlc5947_tlc5947_type,
+    MP_QSTR_tlc5947,
+    MP_TYPE_FLAG_NONE,
+    print, tlc5947_tlc5947_print,
+    make_new, tlc5947_tlc5947_make_new,
+    call, tlc5947_tlc5947_call,
+    locals_dict, &tlc5947_tlc5947_locals_dict
+    );
 
 
 /**

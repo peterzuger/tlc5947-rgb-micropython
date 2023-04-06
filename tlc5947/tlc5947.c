@@ -933,9 +933,7 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
                                   const mp_obj_t *args){
     mp_arg_check_num(n_args, n_kw, 3, 3, true);
 
-    tlc5947_tlc5947_obj_t *self = m_new_obj(tlc5947_tlc5947_obj_t);
-
-    self->base.type = &tlc5947_tlc5947_type;
+    tlc5947_tlc5947_obj_t *self = mp_obj_malloc(tlc5947_tlc5947_obj_t, type);
 
     self->spi   = mp_hal_get_spi_obj(args[0]);
     self->xlat  = mp_hal_get_pin_obj(args[1]);

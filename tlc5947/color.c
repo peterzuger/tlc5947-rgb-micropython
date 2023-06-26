@@ -107,13 +107,13 @@ static const uint16_t logLUT[2][12] = { {
 };
 
 static float log_brightness(float f_linval){
-    uint8_t i;
     uint16_t ipf;
     uint16_t linval = (uint16_t)(f_linval * ((float)10000));
 
     if(linval >= logLUT[1][11]){
         ipf = logLUT[0][11];
     }else{
+        int i;
         for(i = 0; i < 11; i++){
             if(linval < logLUT[1][i]){
                 break;

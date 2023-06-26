@@ -503,7 +503,7 @@ static bool delete_pattern(tlc5947_tlc5947_obj_t* self, uint16_t pid){
 }
 
 static bool get_led_from_id_map(tlc5947_tlc5947_obj_t* self, uint8_t led_in, uint8_t* led){
-    if((led_in < 0) || (led_in >= 8))
+    if(led_in >= 8)
         return false;
     if(self->id_map[led_in] == 0xFF)
         return false;

@@ -1327,8 +1327,8 @@ STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in){
 
 
 STATIC const mp_rom_map_elem_t tlc5947_globals_table[] = {
-    { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947)  },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_tlc5947),  MP_ROM_PTR(&tlc5947_tlc5947_type) },
+    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_tlc5947)      },
+    { MP_ROM_QSTR(MP_QSTR_tlc5947),  MP_ROM_PTR(&tlc5947_tlc5947_type) },
 };
 
 STATIC MP_DEFINE_CONST_DICT(

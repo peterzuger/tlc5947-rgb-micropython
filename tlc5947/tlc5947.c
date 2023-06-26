@@ -529,7 +529,7 @@ static void set_buffer(uint8_t* buf, int led, rgb12 c){
     }
 }
 
-static rgb12 get_buffer(uint8_t* buf, int led){
+static rgb12 get_buffer(const uint8_t* buf, int led){
     rgb12 c = {0};
     if(!(led % 2)){
         c.r = (buf[lut[led]+3]<<4) | ((buf[lut[led]+4]&0xF0)>>4);

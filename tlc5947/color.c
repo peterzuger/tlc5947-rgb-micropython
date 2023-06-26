@@ -145,7 +145,7 @@ void default_white_balance(white_balance_matrix m){
         m[i] = 1.0F;
 }
 
-rgb12 rgb12_white_balance(rgb12 c, white_balance_matrix m){
+rgb12 rgb12_white_balance(rgb12 c, const white_balance_matrix m){
     rgb12 _c;
     _c.r = (uint16_t)(c.r * m[0]);
     _c.g = (uint16_t)(c.g * m[1]);

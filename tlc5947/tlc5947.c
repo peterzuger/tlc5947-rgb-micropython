@@ -727,20 +727,20 @@ static float atof(const char *s){
     }
 
     if(c == 'e' || c == 'E'){
-        int sign = 1;
+        int esign = 1;
         int i = 0;
         c = *s++;
         if(c == '+')
             c = *s++;
         else if(c == '-'){
             c = *s++;
-            sign = -1;
+            esign = -1;
         }
         while(isdigit(c)){
             i = i*10 + (c - '0');
             c = *s++;
         }
-        e += i*sign;
+        e += i*esign;
     }
 
     while(e > 0){
@@ -774,35 +774,35 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
         case '\b':{
             dprintf("BRIGHTNESS\r\n");
             pat[i].type = pBRIGHTNESS;
-            int len = 0;
+            int l = 0;
             if(*s == '-')
-                len++;
-            while(isdigit(s[len]) || (s[len] == '.'))
-                len++;
+                l++;
+            while(isdigit(s[l]) || (s[l] == '.'))
+                l++;
             pat[i].brightness.brightness = atof(s);
-            s += len;
+            s += l;
             break;
         }
 
         case '|':{
             dprintf("SLEEP\r\n");
             pat[i].type = pSLEEP;
-            int len = 0;
-            while(isdigit(s[len]))
-                len++;
+            int l = 0;
+            while(isdigit(s[l]))
+                l++;
             pat[i].sleep.sleep_time = atoi(s);
             pat[i].sleep.remaining = 0;
-            s += len;
+            s += l;
             break;
         }
 
         case '<':{
             pat[i].type = pPUSH;
-            int len = 0;
-            while(isdigit(s[len]))
-                len++;
+            int l = 0;
+            while(isdigit(s[l]))
+                l++;
             pat[i].push.value = atoi(s);
-            s += len;
+            s += l;
             dprintf("PUSH %d\r\n", (int)pat[i].push.value);
             break;
         }

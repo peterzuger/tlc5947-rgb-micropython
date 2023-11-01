@@ -439,9 +439,9 @@ static bool delete_pattern(tlc5947_tlc5947_obj_t* self, uint16_t pid){
     self->data.changed = true;
 
     // first delete all references in the pattern map
-    for(uint16_t i = 0; i < 8; i++){ // itterate over all 8 pattern maps (i)
+    for(uint16_t i = 0; i < 8; i++){ // iterate over all 8 pattern maps (i)
         if(self->data.pattern_map[i].map){ // if this pattern map exists
-            for(uint16_t j = 0; j < self->data.pattern_map[i].len; j++){ // itterate over all id's in this map
+            for(uint16_t j = 0; j < self->data.pattern_map[i].len; j++){ // iterate over all id's in this map
                 if(self->data.pattern_map[i].map[j] == pid){ // if this id matches the to be deleted id
 
                     LOCK(self);

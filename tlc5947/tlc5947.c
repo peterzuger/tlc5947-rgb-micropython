@@ -872,30 +872,30 @@ static void tokenize_pattern_str(const char* s, token_t* pat, size_t len){
 
 mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type, size_t n_args,
                                   size_t n_kw, const mp_obj_t *args);
-STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
+static void tlc5947_tlc5947_print(const mp_print_t *print,
                                   mp_obj_t self_in, mp_print_kind_t kind);
-STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2);
-STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val);
-STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in);
-STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in);
-STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in);
-STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in);
-STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pattern_in);
-STATIC mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t matrix_in);
-STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in);
-STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in);
+static void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2);
+static mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val);
+static mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in);
+static mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in);
+static mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in);
+static mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in);
+static mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pattern_in);
+static mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t matrix_in);
+static mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in);
+static mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in);
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_blank_obj, tlc5947_tlc5947_blank);
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_set_obj, tlc5947_tlc5947_set);
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_replace_obj, tlc5947_tlc5947_replace);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_get_obj, tlc5947_tlc5947_get);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_exists_obj, tlc5947_tlc5947_exists);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_delete_obj, tlc5947_tlc5947_delete);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_white_balance_obj,tlc5947_tlc5947_set_white_balance);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_gamut_obj,tlc5947_tlc5947_set_gamut);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_id_map_obj,tlc5947_tlc5947_set_id_map);
+static MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_blank_obj, tlc5947_tlc5947_blank);
+static MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_set_obj, tlc5947_tlc5947_set);
+static MP_DEFINE_CONST_FUN_OBJ_3(tlc5947_tlc5947_replace_obj, tlc5947_tlc5947_replace);
+static MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_get_obj, tlc5947_tlc5947_get);
+static MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_exists_obj, tlc5947_tlc5947_exists);
+static MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_delete_obj, tlc5947_tlc5947_delete);
+static MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_white_balance_obj,tlc5947_tlc5947_set_white_balance);
+static MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_gamut_obj,tlc5947_tlc5947_set_gamut);
+static MP_DEFINE_CONST_FUN_OBJ_2(tlc5947_tlc5947_set_id_map_obj,tlc5947_tlc5947_set_id_map);
 
-STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
+static const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
     // class methods
     { MP_ROM_QSTR(MP_QSTR_blank),             MP_ROM_PTR(&tlc5947_tlc5947_blank_obj)             },
     { MP_ROM_QSTR(MP_QSTR_set),               MP_ROM_PTR(&tlc5947_tlc5947_set_obj)               },
@@ -907,7 +907,7 @@ STATIC const mp_rom_map_elem_t tlc5947_tlc5947_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_set_gamut),         MP_ROM_PTR(&tlc5947_tlc5947_set_gamut_obj)         },
     { MP_ROM_QSTR(MP_QSTR_set_id_map),        MP_ROM_PTR(&tlc5947_tlc5947_set_id_map_obj)        },
 };
-STATIC MP_DEFINE_CONST_DICT(tlc5947_tlc5947_locals_dict,tlc5947_tlc5947_locals_dict_table);
+static MP_DEFINE_CONST_DICT(tlc5947_tlc5947_locals_dict,tlc5947_tlc5947_locals_dict_table);
 
 
 MP_DEFINE_CONST_OBJ_TYPE(
@@ -960,7 +960,7 @@ mp_obj_t tlc5947_tlc5947_make_new(const mp_obj_type_t *type,
  * Python: print(tlc5947.tlc5947(spi, xlat, blank))
  * @param obj
  */
-STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
+static void tlc5947_tlc5947_print(const mp_print_t *print,
                                   mp_obj_t self_in,mp_print_kind_t kind){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "tlc5947(xlat=" MP_HAL_PIN_FMT ", blank=" MP_HAL_PIN_FMT ", length=%d)",
@@ -971,7 +971,7 @@ STATIC void tlc5947_tlc5947_print(const mp_print_t *print,
  * Python: tlc5947.tlc5947.__call__(self)
  * @param self
  */
-STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2){
+static void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* const* _2){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     if(IS_UNLOCKED(self)){
         if(do_tick(self)){
@@ -989,7 +989,7 @@ STATIC void* tlc5947_tlc5947_call(void* self_in, size_t _0, size_t _1, void* con
  * @param self
  * @param val
  */
-STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
+static mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     mp_hal_pin_write(self->blank, mp_obj_is_true(val));
@@ -1003,7 +1003,7 @@ STATIC mp_obj_t tlc5947_tlc5947_blank(mp_obj_t self_in, mp_obj_t val){
  * @param led
  * @param pattern
  */
-STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in){
+static mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t pattern_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     // lex the current pattern, and add it to the pattern_list
@@ -1135,7 +1135,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set(mp_obj_t self_in, mp_obj_t led_in, mp_obj_t 
  * @param pid
  * @param pattern
  */
-STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in){
+static mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_obj_t pattern_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     const char* pattern_str = mp_obj_str_get_str(pattern_in);
@@ -1185,7 +1185,7 @@ STATIC mp_obj_t tlc5947_tlc5947_replace(mp_obj_t self_in, mp_obj_t pid_in, mp_ob
  * @param self
  * @param led
  */
-STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
+static mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     uint8_t led;
     if(!get_led_from_id_map(self, mp_obj_get_int(led_in), &led)){
@@ -1206,7 +1206,7 @@ STATIC mp_obj_t tlc5947_tlc5947_get(mp_obj_t self_in, mp_obj_t led_in){
  * @param self
  * @param pid
  */
-STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
+static mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     if(!mp_obj_is_int(pid_in))
@@ -1229,7 +1229,7 @@ STATIC mp_obj_t tlc5947_tlc5947_exists(mp_obj_t self_in, mp_obj_t pid_in){
  * @param self
  * @param pid
  */
-STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
+static mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     int pid = mp_obj_get_int(pid_in);
 
@@ -1241,7 +1241,7 @@ STATIC mp_obj_t tlc5947_tlc5947_delete(mp_obj_t self_in, mp_obj_t pid_in){
  * @param self
  * @param white_balance_matrix
  */
-STATIC mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t matrix_in){
+static mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t matrix_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     mp_obj_t *items;
@@ -1265,7 +1265,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set_white_balance(mp_obj_t self_in, mp_obj_t mat
  * @param self
  * @param gamut_matrix
  */
-STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in){
+static mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     mp_obj_t *items;
@@ -1300,7 +1300,7 @@ STATIC mp_obj_t tlc5947_tlc5947_set_gamut(mp_obj_t self_in, mp_obj_t matrix_in){
  * @param self
  * @param map
  */
-STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in){
+static mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in){
     tlc5947_tlc5947_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_obj_t *items;
     mp_obj_get_array_fixed_n(map_in, 8, &items);
@@ -1326,12 +1326,12 @@ STATIC mp_obj_t tlc5947_tlc5947_set_id_map(mp_obj_t self_in, mp_obj_t map_in){
 }
 
 
-STATIC const mp_rom_map_elem_t tlc5947_globals_table[] = {
+static const mp_rom_map_elem_t tlc5947_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_tlc5947)      },
     { MP_ROM_QSTR(MP_QSTR_tlc5947),  MP_ROM_PTR(&tlc5947_tlc5947_type) },
 };
 
-STATIC MP_DEFINE_CONST_DICT(
+static MP_DEFINE_CONST_DICT(
     mp_module_tlc5947_globals,
     tlc5947_globals_table
     );
